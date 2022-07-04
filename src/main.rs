@@ -8,14 +8,15 @@ pub mod errors;
 pub mod utils;
 
 fn main() {
+    // parse args
     let command = parse_args::get_args();
     match command {
         Some(c) => {
-            //
             // Connect to DB
             let collection = db::connect_to_db();
             println!("{collection}");
             //
+            // Execute one of the CRUD commands
             let asset = c.asset;
             let output = match c.command {
                 CommandType::Create => utils::create(collection, asset),
@@ -24,6 +25,7 @@ fn main() {
                 CommandType::Delete => utils::delete(collection, asset),
                 CommandType::GetLatest => utils::get_latest(collection, asset),
             };
+            //
             // exit nicely, or panic
             errors::exit(output);
         }

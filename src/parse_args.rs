@@ -1,9 +1,10 @@
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Serialize, Deserialize)]
 enum Status {
-    online,
-    purge,
-    delete,
+    Online,
+    Purge,
+    Delete,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -49,14 +50,21 @@ pub fn get_args() -> Option<Command> {
     // check args for command and json passed.
     // each command has a set of required elements in the json
 
+    let version = AssetVersion {
+        version: 1 as u32,
+        source: "source_path".to_owned(),
+        approved: false,
+        status: Status::Online,
+    };
+
     let asset = Asset {
         name: "my_asset".to_owned(),
         location: "show_seq_shot".to_owned(),
         source: "source_file.hip".to_owned(),
         datapath: "/data/path/file/test.bgeo.sc".to_owned(),
+        version: version,
     };
 
     let command = CommandType::Create;
     Some(Command { command, asset })
-
 }

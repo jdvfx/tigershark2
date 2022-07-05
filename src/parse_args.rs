@@ -62,7 +62,7 @@ pub fn get_args() -> Option<Command> {
         location: "show_seq_shot".to_owned(),
         source: "source_file.hip".to_owned(),
         datapath: "/data/path/file/test.bgeo.sc".to_owned(),
-        version: version,
+        version,
     };
 
     let command = CommandType::Create;

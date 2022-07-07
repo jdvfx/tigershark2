@@ -1,28 +1,32 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
-enum Status {
-    Online,
-    Purge,
-    Delete,
-}
+pub use crate::assetdef::Asset;
+pub use crate::assetdef::AssetVersion;
+pub use crate::assetdef::Status;
 
-#[derive(Debug, Serialize, Deserialize)]
-struct AssetVersion {
-    version: u32,
-    source: String,
-    approved: bool,
-    status: Status,
-}
+// #[derive(Debug, Serialize, Deserialize)]
+// enum Status {
+//     Online,
+//     Purge,
+//     Delete,
+// }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Asset {
-    name: String,
-    location: String,
-    source: String,
-    datapath: String,
-    version: AssetVersion,
-}
+// #[derive(Debug, Serialize, Deserialize)]
+// struct AssetVersion {
+//     version: u32,
+//     source: String,
+//     approved: bool,
+//     status: Status,
+// }
+
+// #[derive(Debug, Serialize, Deserialize)]
+// pub struct Asset {
+//     name: String,
+//     location: String,
+//     source: String,
+//     datapath: String,
+//     version: AssetVersion,
+// }
 
 #[derive(Debug)]
 pub enum CommandType {
@@ -49,21 +53,43 @@ pub fn get_args() -> Option<Command> {
     // parse the args with Clap
     // check args for command and json passed.
     // each command has a set of required elements in the json
+    //
+    //
+    //
 
-    let version = AssetVersion {
+    //     approved: false,
+    //     status: Status::Online,
+    //
+
+    let status = Status::Online;
+
+    let asset_version = AssetVersion {
         version: 1 as u32,
-        source: "source_path".to_owned(),
+        source: "source".to_owned(),
         approved: false,
         status: Status::Online,
     };
 
     let asset = Asset {
-        name: "my_asset".to_owned(),
-        location: "show_seq_shot".to_owned(),
-        source: "source_file.hip".to_owned(),
-        datapath: "/data/path/file/test.bgeo.sc".to_owned(),
-        version,
+        name: "asset_name".to_owned(),
+        location: "location".to_owned(),
+        source: "source".to_owned(),
+        datapath: "datapath".to_owned(),
+        version: asset_version,
     };
+    // let version = AssetVersion {
+    //     version: 1 as u32,
+    //     source: "source_path".to_owned(),
+
+    // };
+
+    // let asset = Asset {
+    //     name: "my_asset".to_owned(),
+    //     location: "show_seq_shot".to_owned(),
+    //     source: "source_file.hip".to_owned(),
+    //     datapath: "/data/path/file/test.bgeo.sc".to_owned(),
+    //     version,
+    // };
 
     let command = CommandType::Create;
     Some(Command { command, asset })

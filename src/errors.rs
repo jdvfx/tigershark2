@@ -24,8 +24,6 @@ pub struct CliOutput {
 // };
 // exit_or_panic(panic);
 
-
-
 pub fn exit_or_panic(cli_output: CliOutput) {
     //
     match cli_output.status {

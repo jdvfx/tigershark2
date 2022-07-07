@@ -3,12 +3,14 @@ use crate::parse_args::Asset;
 
 // CRUD functions
 
-pub fn create(collection: String, asset: Asset) -> CliOutput {
+use mongodb::{Client, Collection};
+
+pub async fn create(collection: mongodb::Collection<Asset>, asset: Asset) -> CliOutput {
     // > required:
     // asset_name, location, source
 
     println!("create");
-    println!("collection: {collection}");
+    println!("collection: {:?}", collection);
     println!("Asset: {:?}", asset);
 
     CliOutput {
@@ -16,7 +18,7 @@ pub fn create(collection: String, asset: Asset) -> CliOutput {
         output: "asset created".to_owned(),
     }
 }
-pub fn update(collection: String, asset: Asset) -> CliOutput {
+pub fn update(collection: mongodb::Collection<Asset>, asset: Asset) -> CliOutput {
     // > required:
     // asset_name, location, source
     // OR
@@ -27,7 +29,7 @@ pub fn update(collection: String, asset: Asset) -> CliOutput {
     // get latest version and increment
     // create new Version struct and push to Vec > add to collection
 
-    println!("collection: {collection}");
+    println!("collection: {:?}", collection);
     println!("Asset: {:?}", asset);
 
     CliOutput {
@@ -35,7 +37,7 @@ pub fn update(collection: String, asset: Asset) -> CliOutput {
         output: "asset updated".to_owned(),
     }
 }
-pub fn get_source(collection: String, asset: Asset) -> CliOutput {
+pub fn get_source(collection: mongodb::Collection<Asset>, asset: Asset) -> CliOutput {
     // > required:
     // datapath
 
@@ -44,7 +46,7 @@ pub fn get_source(collection: String, asset: Asset) -> CliOutput {
     // parse datapath and extract asset_name, location, version ?
     // quiery and return source.
 
-    println!("collection: {collection}");
+    println!("collection: {:?}", collection);
     println!("Asset: {:?}", asset);
 
     CliOutput {
@@ -53,7 +55,7 @@ pub fn get_source(collection: String, asset: Asset) -> CliOutput {
     }
 }
 
-pub fn delete(collection: String, asset: Asset) -> CliOutput {
+pub fn delete(collection: mongodb::Collection<Asset>, asset: Asset) -> CliOutput {
     // > required:
     // asset_name, location, source, version
     // OR
@@ -64,7 +66,7 @@ pub fn delete(collection: String, asset: Asset) -> CliOutput {
     // find asset and update status to "purge"
     // status should be an Enum: online/purge/deleted
 
-    println!("collection: {collection}");
+    println!("collection: {:?}", collection);
     println!("Asset: {:?}", asset);
     CliOutput {
         status: Status::Ok,
@@ -72,14 +74,14 @@ pub fn delete(collection: String, asset: Asset) -> CliOutput {
     }
 }
 
-pub fn get_latest(collection: String, asset: Asset) -> CliOutput {
+pub fn get_latest(collection: mongodb::Collection<Asset>, asset: Asset) -> CliOutput {
     // > required:
     // asset_name, location, source
     // OR
     // asset_id
 
     println!("get latest verions");
-    println!("collection: {collection}");
+    println!("collection: {:?}", collection);
     println!("Asset: {:?}", asset);
     CliOutput {
         status: Status::Ok,

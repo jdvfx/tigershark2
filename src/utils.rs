@@ -9,6 +9,7 @@ pub async fn create(collection: mongodb::Collection<Asset>, asset: Asset) -> Cli
     // > required:
     // asset_name, location, source
 
+    let insert_result = collection.insert_one(&asset, None).await;
     println!("create");
     println!("collection: {:?}", collection);
     println!("Asset: {:?}", asset);

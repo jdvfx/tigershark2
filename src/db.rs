@@ -15,8 +15,8 @@ pub async fn connect_to_db() -> Option<mongodb::Collection<Asset>> {
 
     match client {
         Ok(c) => {
-            let database = c.database("gusfring");
-            let collection: mongodb::Collection<Asset> = database.collection("chicken");
+            let database = c.database("sharks");
+            let collection: mongodb::Collection<Asset> = database.collection("tiger");
             Some(collection)
         }
         Err(_e) => None,

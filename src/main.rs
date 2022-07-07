@@ -1,6 +1,7 @@
 #![allow(dead_code, unused_variables, unused_assignments, unused_imports)]
 
 pub mod parse_args;
+use errors::{exit_or_panic, CliOutput, Status};
 use parse_args::CommandType;
 
 pub mod db;
@@ -8,6 +9,9 @@ pub mod errors;
 pub mod utils;
 
 fn main() {
+    // put most of this in lib.rs
+    // user should not be exposed to all this
+
     // parse args
     let command = parse_args::get_args();
     match command {
@@ -26,8 +30,12 @@ fn main() {
                 CommandType::GetLatest => utils::get_latest(collection, asset),
             };
             //
-            // exit nicely, or panic
-            errors::exit(output);
+            // exit nicely for now:
+            let cli_output = CliOutput {
+                status: Status::Ok,
+                output: "exit nicely".to_owned(),
+            };
+            exit_or_panic(cli_output);
         }
         None => println!("no command"),
     }

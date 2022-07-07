@@ -1,9 +1,9 @@
-use crate::errors::ErrOutput;
+use crate::errors::{CliOutput, Status};
 use crate::parse_args::Asset;
 
 // CRUD functions
 
-pub fn create(collection: String, asset: Asset) -> ErrOutput {
+pub fn create(collection: String, asset: Asset) -> CliOutput {
     // > required:
     // asset_name, location, source
 
@@ -11,12 +11,12 @@ pub fn create(collection: String, asset: Asset) -> ErrOutput {
     println!("collection: {collection}");
     println!("Asset: {:?}", asset);
 
-    ErrOutput {
-        status: 0,
+    CliOutput {
+        status: Status::Ok,
         output: "asset created".to_owned(),
     }
 }
-pub fn update(collection: String, asset: Asset) -> ErrOutput {
+pub fn update(collection: String, asset: Asset) -> CliOutput {
     // > required:
     // asset_name, location, source
     // OR
@@ -30,12 +30,12 @@ pub fn update(collection: String, asset: Asset) -> ErrOutput {
     println!("collection: {collection}");
     println!("Asset: {:?}", asset);
 
-    ErrOutput {
-        status: 0,
+    CliOutput {
+        status: Status::Ok,
         output: "asset updated".to_owned(),
     }
 }
-pub fn get_source(collection: String, asset: Asset) -> ErrOutput {
+pub fn get_source(collection: String, asset: Asset) -> CliOutput {
     // > required:
     // datapath
 
@@ -47,13 +47,13 @@ pub fn get_source(collection: String, asset: Asset) -> ErrOutput {
     println!("collection: {collection}");
     println!("Asset: {:?}", asset);
 
-    ErrOutput {
-        status: 0,
+    CliOutput {
+        status: Status::Ok,
         output: "source file: xxxx".to_owned(),
     }
 }
 
-pub fn delete(collection: String, asset: Asset) -> ErrOutput {
+pub fn delete(collection: String, asset: Asset) -> CliOutput {
     // > required:
     // asset_name, location, source, version
     // OR
@@ -66,13 +66,13 @@ pub fn delete(collection: String, asset: Asset) -> ErrOutput {
 
     println!("collection: {collection}");
     println!("Asset: {:?}", asset);
-    ErrOutput {
-        status: 0,
+    CliOutput {
+        status: Status::Ok,
         output: "asset marked for deletion".to_owned(),
     }
 }
 
-pub fn get_latest(collection: String, asset: Asset) -> ErrOutput {
+pub fn get_latest(collection: String, asset: Asset) -> CliOutput {
     // > required:
     // asset_name, location, source
     // OR
@@ -81,8 +81,8 @@ pub fn get_latest(collection: String, asset: Asset) -> ErrOutput {
     println!("get latest verions");
     println!("collection: {collection}");
     println!("Asset: {:?}", asset);
-    ErrOutput {
-        status: 0,
+    CliOutput {
+        status: Status::Ok,
         output: "latest version is xxx".to_owned(),
     }
 }

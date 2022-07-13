@@ -20,6 +20,11 @@ async fn main() {
 
     // parse args
     let command = parse_args::get_args();
+
+    println!("{:?}", command);
+    println!(" . . . . ");
+    // panic!();
+
     match command {
         Some(c) => {
             // Connect to DB

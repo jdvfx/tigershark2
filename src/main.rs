@@ -31,9 +31,9 @@ async fn main() {
             let collection = db::connect_to_db();
             match collection.await {
                 Some(collection) => {
-                    println!("OK collection");
+                    println!("collection found");
 
-                    println!("{:?}", collection);
+                    // println!("{:?}", collection);
                     // panic!();
 
                     let asset = c.asset;

@@ -17,27 +17,32 @@ pub async fn create(collection: mongodb::Collection<Asset>, asset: Asset) -> Cli
     match cursor {
         Ok(c) => match &c {
             Some(c) => {
-                println!("SOME {:?}", c);
-                println!("asset already exists");
+                // Asset found in the DB
                 CliOutput {
                     status: Status::Ok,
-                    output: "asset already exists".to_owned(),
+                    output: "Asset already exists".to_owned(),
                 }
             }
             None => {
-                println!("NONE");
+                // Asset not found in DB, try to insert it
                 let insert_result = collection.insert_one(&asset, None).await;
-                CliOutput {
-                    status: Status::Ok,
-                    output: "asset found".to_owned(),
+                match insert_result {
+                    Ok(..) => CliOutput {
+                        status: Status::Ok,
+                        output: "Asset inserted".to_owned(),
+                    },
+                    Err(e) => CliOutput {
+                        status: Status::Err,
+                        output: format!("DB Insertion Error: {}", e),
+                    },
                 }
             }
         },
         Err(c) => {
-            // something is fucked up
+            // Error with the Quiery (Cursor not OK)
             CliOutput {
                 status: Status::Err,
-                output: "something went wrong with the quiery".to_owned(),
+                output: format!("DB Quiery Error {}", c),
             }
         }
     }

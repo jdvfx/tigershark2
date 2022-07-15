@@ -12,7 +12,6 @@ pub enum Status {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct AssetVersion {
     pub version: u32,
-    pub location: String,
     pub datapath: String,
     pub source: String,
     pub approved: bool,
@@ -23,5 +22,6 @@ pub struct AssetVersion {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Asset {
     pub name: String,
+    pub location: String,
     pub version: AssetVersion,
 }

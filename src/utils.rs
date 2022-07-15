@@ -3,21 +3,57 @@ use crate::parse_args::Asset;
 
 // CRUD functions
 
-use mongodb::{Client, Collection};
+use mongodb::{bson::doc, Client, Collection};
 
 pub async fn create(collection: mongodb::Collection<Asset>, asset: Asset) -> CliOutput {
     // > required:
     // asset_name, location, source
 
-    let insert_result = collection.insert_one(&asset, None).await;
-    println!("create");
-    println!("collection: {:?}", collection);
-    println!("Asset: {:?}", asset);
+    // find doc from name and location
+    let cursor = collection
+        .find_one(Some(doc! { "name": &asset.name }), None)
+        .await;
 
-    CliOutput {
-        status: Status::Ok,
-        output: "asset created".to_owned(),
+    match cursor {
+        Ok(c) => match &c {
+            Some(c) => {
+                println!("SOME {:?}", c);
+                println!("asset already exists");
+                CliOutput {
+                    status: Status::Ok,
+                    output: "asset already exists".to_owned(),
+                }
+            }
+            None => {
+                println!("NONE");
+                let insert_result = collection.insert_one(&asset, None).await;
+                CliOutput {
+                    status: Status::Ok,
+                    output: "asset found".to_owned(),
+                }
+            }
+        },
+        Err(c) => {
+            // something is fucked up
+            CliOutput {
+                status: Status::Err,
+                output: "something went wrong with the quiery".to_owned(),
+            }
+        }
     }
+
+    // -----------------------------------
+
+    // let insert_result = collection.insert_one(&asset, None).await;
+    // println!("create");
+    // println!("collection: {:?}", collection);
+    // println!("Asset: {:?}", asset);
+
+    // -----------------------------------
+    // CliOutput {
+    //     status: Status::Ok,
+    //     output: "asset created".to_owned(),
+    // }
 }
 pub fn update(collection: mongodb::Collection<Asset>, asset: Asset) -> CliOutput {
     // > required:

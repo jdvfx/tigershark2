@@ -80,7 +80,6 @@ pub fn get_args() -> Option<Command> {
 
                 let first_version = AssetVersion {
                     version: 1 as u32,
-                    location: asset.location.unwrap(),
                     datapath: asset.datapath.unwrap(),
                     source: asset.source.unwrap(),
                     approved: false,
@@ -89,6 +88,7 @@ pub fn get_args() -> Option<Command> {
 
                 let asset = Asset {
                     name: asset.name.unwrap(),
+                    location: asset.location.unwrap(),
                     version: first_version,
                 };
                 let command = CommandType::Create;
@@ -122,7 +122,6 @@ pub fn get_args() -> Option<Command> {
     let status = Status::Online;
     let asset_version = AssetVersion {
         version: 1 as u32,
-        location: "location".to_owned(),
         datapath: "datapath".to_owned(),
         source: "source".to_owned(),
         approved: false,
@@ -131,6 +130,7 @@ pub fn get_args() -> Option<Command> {
 
     let asset = Asset {
         name: "asset_name".to_owned(),
+        location: "location".to_owned(),
         version: asset_version,
     };
     // let version = AssetVersion {

@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
-pub enum Status {
+pub enum AssetStatus {
     Online,
     Purge,
     Delete,
@@ -15,7 +15,7 @@ pub struct AssetVersion {
     pub datapath: String,
     pub source: String,
     pub approved: bool,
-    pub status: Status,
+    pub status: AssetStatus,
 }
 
 // this goes in the DB, no touchy!

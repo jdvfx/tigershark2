@@ -1,17 +1,37 @@
 use crate::errors::{CliOutput, Status};
 use crate::parse_args::Asset;
+use crate::parse_args::JsonString;
+
+// pub use crate::assetdef::Asset;
+use crate::assetdef::AssetStatus;
+pub use crate::assetdef::AssetVersion;
 
 // CRUD functions
-
+//
+//
 use mongodb::{bson::doc, Client, Collection};
 
-pub async fn create(collection: mongodb::Collection<Asset>, asset: Asset) -> CliOutput {
+pub async fn create(collection: mongodb::Collection<Asset>, args: JsonString) -> CliOutput {
     // > required:
     // asset_name, location, source
 
+    let first_version = AssetVersion {
+        version: 1 as u32,
+        datapath: args.datapath.unwrap(),
+        source: args.source.unwrap(),
+        approved: false,
+        status: AssetStatus::Online,
+    };
+
+    let asset = Asset {
+        name: args.name.as_ref().unwrap().to_string(),
+        location: args.location.unwrap(),
+        version: first_version,
+    };
+
     // find doc from name and location
     let cursor = collection
-        .find_one(Some(doc! { "name": &asset.name }), None)
+        .find_one(Some(doc! { "name": &args.name }), None)
         .await;
 
     match cursor {
@@ -60,7 +80,7 @@ pub async fn create(collection: mongodb::Collection<Asset>, asset: Asset) -> Cli
     //     output: "asset created".to_owned(),
     // }
 }
-pub fn update(collection: mongodb::Collection<Asset>, asset: Asset) -> CliOutput {
+pub fn update(collection: mongodb::Collection<Asset>, args: JsonString) -> CliOutput {
     // > required:
     // asset_name, location, source
     // OR
@@ -72,14 +92,14 @@ pub fn update(collection: mongodb::Collection<Asset>, asset: Asset) -> CliOutput
     // create new Version struct and push to Vec > add to collection
 
     println!("collection: {:?}", collection);
-    println!("Asset: {:?}", asset);
+    println!("Asset: {:?}", args);
 
     CliOutput {
         status: Status::Ok,
         output: "asset updated".to_owned(),
     }
 }
-pub fn get_source(collection: mongodb::Collection<Asset>, asset: Asset) -> CliOutput {
+pub fn get_source(collection: mongodb::Collection<Asset>, args: JsonString) -> CliOutput {
     // > required:
     // datapath
 
@@ -89,7 +109,7 @@ pub fn get_source(collection: mongodb::Collection<Asset>, asset: Asset) -> CliOu
     // quiery and return source.
 
     println!("collection: {:?}", collection);
-    println!("Asset: {:?}", asset);
+    println!("Asset: {:?}", args);
 
     CliOutput {
         status: Status::Ok,
@@ -97,7 +117,7 @@ pub fn get_source(collection: mongodb::Collection<Asset>, asset: Asset) -> CliOu
     }
 }
 
-pub fn delete(collection: mongodb::Collection<Asset>, asset: Asset) -> CliOutput {
+pub fn delete(collection: mongodb::Collection<Asset>, args: JsonString) -> CliOutput {
     // > required:
     // asset_name, location, source, version
     // OR
@@ -109,14 +129,14 @@ pub fn delete(collection: mongodb::Collection<Asset>, asset: Asset) -> CliOutput
     // status should be an Enum: online/purge/deleted
 
     println!("collection: {:?}", collection);
-    println!("Asset: {:?}", asset);
+    println!("Asset: {:?}", args);
     CliOutput {
         status: Status::Ok,
         output: "asset marked for deletion".to_owned(),
     }
 }
 
-pub fn get_latest(collection: mongodb::Collection<Asset>, asset: Asset) -> CliOutput {
+pub fn get_latest(collection: mongodb::Collection<Asset>, args: JsonString) -> CliOutput {
     // > required:
     // asset_name, location, source
     // OR
@@ -124,7 +144,7 @@ pub fn get_latest(collection: mongodb::Collection<Asset>, asset: Asset) -> CliOu
 
     println!("get latest verions");
     println!("collection: {:?}", collection);
-    println!("Asset: {:?}", asset);
+    println!("Asset: {:?}", args);
     CliOutput {
         status: Status::Ok,
         output: "latest version is xxx".to_owned(),

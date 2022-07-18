@@ -2,8 +2,10 @@ use clap::Parser;
 use serde::{Deserialize, Serialize};
 
 pub use crate::assetdef::Asset;
+pub use crate::assetdef::AssetStatus;
 pub use crate::assetdef::AssetVersion;
-pub use crate::assetdef::Status;
+
+use mongodb::bson::oid::ObjectId;
 
 #[derive(Debug)]
 pub enum CommandType {
@@ -23,7 +25,8 @@ pub enum CommandType {
 #[derive(Debug)]
 pub struct Command {
     pub command: CommandType,
-    pub asset: Asset,
+    pub args: JsonString,
+    // pub asset: Asset,
 }
 
 /// CLI Asset tracker with MondoDB
@@ -69,6 +72,7 @@ pub fn get_args() -> Option<Command> {
     let a_source = asset.source.is_some();
     let a_datapath = asset.datapath.is_some();
     let a_version = asset.version.is_some();
+    let a_id = asset.id.is_some();
 
     // --- COMMAND ---
     let c = args.command;
@@ -76,39 +80,100 @@ pub fn get_args() -> Option<Command> {
     match cc {
         "create" => {
             if a_name && a_location && a_source && a_datapath {
-                println!(">create : Asset Good");
+                println!(">create");
+                // let first_version = AssetVersion {
+                //     version: 1 as u32,
+                //     datapath: asset.datapath.unwrap(),
+                //     source: asset.source.unwrap(),
+                //     approved: false,
+                //     status: Status::Online,
+                // };
 
-                let first_version = AssetVersion {
-                    version: 1 as u32,
-                    datapath: asset.datapath.unwrap(),
-                    source: asset.source.unwrap(),
-                    approved: false,
-                    status: Status::Online,
-                };
-
-                let asset = Asset {
-                    name: asset.name.unwrap(),
-                    location: asset.location.unwrap(),
-                    version: first_version,
-                };
+                // let asset = Asset {
+                //     name: asset.name.unwrap(),
+                //     location: asset.location.unwrap(),
+                //     version: first_version,
+                // };
                 let command = CommandType::Create;
-                return Some(Command { command, asset });
+                return Some(Command {
+                    command,
+                    args: asset,
+                });
             } else {
                 println!("create : Asset missing some Keys");
             }
         }
         "update" => {
-            println!(">update");
+            if a_name && a_location || a_id {
+                if a_id {
+                    println!(">update (using ID)");
+
+                    // let dummy_version = AssetVersion {
+                    //     version: 1 as u32,
+                    //     datapath: "dummy".to_owned(),
+                    //     source: "dummy".to_owned(),
+                    //     approved: false,
+                    //     status: Status::Online,
+                    // };
+
+                    // let asset = Asset {
+                    //     name: asset.name.unwrap(),
+                    //     location: asset.location.unwrap(),
+                    //     version: dummy_version,
+                    // };
+
+                    let command = CommandType::Update;
+                    return Some(Command {
+                        command,
+                        args: asset,
+                    });
+                    // this should be done in utils.rs (we are just parsing arguments here)
+
+                    // let objid = ObjectId::parse_str(&asset.id.unwrap());
+                    // let objid_: ObjectId;
+                    // if objid.is_ok() {
+                    //     // let cursor = coll.find_one(Some(doc! { "_id": &objid.unwrap() }), None).await;
+                    //     let cursor = coll.find_one(Some(doc! { "_id": &objid.Ok() }), None).await;
+                    // }
+                } else {
+                    println!(">update");
+
+                    let command = CommandType::Update;
+                    return Some(Command {
+                        command,
+                        args: asset,
+                    });
+                    // this should be done in utils.rs (we are just parsing arguments here)
+
+                    // let cursor = coll
+                    //     .find_one(Some(doc! { "name": &a_name , "location":&a_location}), None)
+                    //     .await;
+                    //
+                }
+            } else {
+                println!("update : Asset missing some Keys");
+            }
         }
         "source" => {
-            println!(">source");
+            if a_name && a_location && a_version || a_id && a_version {
+                println!(">source");
+            } else {
+                println!("source : Asset missing some Keys");
+            }
         }
         "delete" => {
-            println!(">delete");
-            // can take ((name&&location)||ID)&&version
+            if a_name && a_location && a_version || a_id && a_version {
+                println!(">delete");
+            } else {
+                println!("delete : Asset missing some Keys");
+            }
         }
         "latest" => {
-            println!(">latest");
+            if a_name && a_location || a_id {
+                println!(">latest");
+            } else {
+                println!("latest : Asset missing some Keys");
+            }
         }
         _ => {
             println!("NOT a command");
@@ -119,34 +184,24 @@ pub fn get_args() -> Option<Command> {
     //     status: Status::Online,
     //
 
-    let status = Status::Online;
-    let asset_version = AssetVersion {
-        version: 1 as u32,
-        datapath: "datapath".to_owned(),
-        source: "source".to_owned(),
-        approved: false,
-        status: Status::Online,
-    };
-
-    let asset = Asset {
-        name: "asset_name".to_owned(),
-        location: "location".to_owned(),
-        version: asset_version,
-    };
-    // let version = AssetVersion {
+    // let status = Status::Online;
+    // let asset_version = AssetVersion {
     //     version: 1 as u32,
-    //     source: "source_path".to_owned(),
-
+    //     datapath: "datapath".to_owned(),
+    //     source: "source".to_owned(),
+    //     approved: false,
+    //     status: Status::Online,
     // };
 
     // let asset = Asset {
-    //     name: "my_asset".to_owned(),
-    //     location: "show_seq_shot".to_owned(),
-    //     source: "source_file.hip".to_owned(),
-    //     datapath: "/data/path/file/test.bgeo.sc".to_owned(),
-    //     version,
+    //     name: "asset_name".to_owned(),
+    //     location: "location".to_owned(),
+    //     version: asset_version,
     // };
 
-    let command = CommandType::Create;
-    Some(Command { command, asset })
+    // let command = CommandType::Create;
+    // Some(Command { command, asset })
+
+    //return no command by default
+    None
 }

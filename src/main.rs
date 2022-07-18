@@ -36,14 +36,14 @@ async fn main() {
                     // println!("{:?}", collection);
                     // panic!();
 
-                    let asset = c.asset;
+                    let args = c.args;
                     // Execute one of the CRUD commands
                     let cli_output = match c.command {
-                        CommandType::Create => utils::create(collection, asset).await,
-                        CommandType::Update => utils::update(collection, asset),
-                        CommandType::GetSource => utils::get_source(collection, asset),
-                        CommandType::Delete => utils::delete(collection, asset),
-                        CommandType::GetLatest => utils::get_latest(collection, asset),
+                        CommandType::Create => utils::create(collection, args).await,
+                        CommandType::Update => utils::update(collection, args),
+                        CommandType::GetSource => utils::get_source(collection, args),
+                        CommandType::Delete => utils::delete(collection, args),
+                        CommandType::GetLatest => utils::get_latest(collection, args),
                     };
                     exit_or_panic(cli_output)
                 }

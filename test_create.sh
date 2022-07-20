@@ -1,5 +1,5 @@
 ./target/debug/tigershark2 -c create -a '{
-"name":"my other asset",
-"location":"my_location",
-"source":"my_source",
-"datapath":"/my/data/path"}'
+"name":"Sphere",
+"location":"my_sphere_location",
+"source":"source_that_created_sphere",
+"datapath":"/my/data/path/mysphere"}'

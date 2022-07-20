@@ -23,5 +23,5 @@ pub struct AssetVersion {
 pub struct Asset {
     pub name: String,
     pub location: String,
-    pub version: AssetVersion,
+    pub version: Vec<AssetVersion>,
 }

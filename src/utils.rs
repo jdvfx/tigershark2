@@ -23,10 +23,13 @@ pub async fn create(collection: mongodb::Collection<Asset>, json: JsonString) ->
         status: AssetStatus::Online,
     };
 
+    let mut versions: Vec<AssetVersion> = Vec::new();
+    versions.push(first_version);
+
     let asset = Asset {
         name: json.name.as_ref().unwrap().to_string(),
         location: json.location.unwrap(),
-        version: first_version,
+        version: versions,
     };
 
     // find doc from name and location
@@ -80,27 +83,25 @@ pub async fn create(collection: mongodb::Collection<Asset>, json: JsonString) ->
     //     output: "asset created".to_owned(),
     // }
 }
+
+// ------------------- FIND BY ID --------------------------------
+// this should be done in utils.rs (we are just parsing arguments here)
+
+// let objid = ObjectId::parse_str(&asset.id.unwrap());
+// let objid_: ObjectId;
+// if objid.is_ok() {
+//     // let cursor = coll.find_one(Some(doc! { "_id": &objid.unwrap() }), None).await;
+//     let cursor = coll.find_one(Some(doc! { "_id": &objid.Ok() }), None).await;
+// }
+// ---------------------------------------------------------------
+// ## ## ## ## ## ##
+// ## ## ## ## ## ##
 pub async fn update(collection: mongodb::Collection<Asset>, json: JsonString) -> CliOutput {
     // > required:
     // asset_name, location, source
     // OR
     // asset_id
 
-
-    // ------------------- FIND BY ID --------------------------------
-    // this should be done in utils.rs (we are just parsing arguments here)
-
-    // let objid = ObjectId::parse_str(&asset.id.unwrap());
-    // let objid_: ObjectId;
-    // if objid.is_ok() {
-    //     // let cursor = coll.find_one(Some(doc! { "_id": &objid.unwrap() }), None).await;
-    //     let cursor = coll.find_one(Some(doc! { "_id": &objid.Ok() }), None).await;
-    // }
-    // ---------------------------------------------------------------
-
-
-
-    // find doc from name and location
     let cursor = collection
         .find_one(
             Some(doc! { "name": &json.name , "location": &json.location}),
@@ -110,10 +111,27 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: JsonString) ->
 
     match cursor {
         Ok(c) => match &c {
-            Some(c) => CliOutput {
-                status: Status::Ok,
-                output: "Asset found in DB".to_owned(),
-            },
+            Some(c) => {
+                println!("document found: {:?}", c);
+
+                let v = &c.version;
+                println!(":: {:?}", v);
+                // match cc {
+                //     Ok(c) => {
+                //         let aa = c.get(0);
+                //         if aa.is_some() {
+                //             let b = aa.unwrap().clone();
+                //             c.push(b);
+                //         }
+                //     }
+                //     Err() => (),
+                // }
+
+                CliOutput {
+                    status: Status::Ok,
+                    output: "Asset found in DB".to_owned(),
+                }
+            }
             None => CliOutput {
                 status: Status::Err,
                 output: format!("Asset not found in DB "),
@@ -124,19 +142,6 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: JsonString) ->
             output: format!("DB Quiery Error {}", c),
         },
     }
-
-    // println!("update asset");
-
-    // // get latest version and increment
-    // // create new Version struct and push to Vec > add to collection
-
-    // println!("collection: {:?}", collection);
-    // println!("Asset: {:?}", args);
-
-    // CliOutput {
-    //     status: Status::Ok,
-    //     output: "asset updated".to_owned(),
-    // }
 }
 pub async fn get_source(collection: mongodb::Collection<Asset>, args: JsonString) -> CliOutput {
     // > required:

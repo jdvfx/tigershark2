@@ -144,28 +144,6 @@ pub fn get_args() -> Option<Command> {
         }
     }
 
-    //     approved: false,
-    //     status: Status::Online,
-    //
-
-    // let status = Status::Online;
-    // let asset_version = AssetVersion {
-    //     version: 1 as u32,
-    //     datapath: "datapath".to_owned(),
-    //     source: "source".to_owned(),
-    //     approved: false,
-    //     status: Status::Online,
-    // };
-
-    // let asset = Asset {
-    //     name: "asset_name".to_owned(),
-    //     location: "location".to_owned(),
-    //     version: asset_version,
-    // };
-
-    // let command = CommandType::Create;
-    // Some(Command { command, asset })
-
     //return no command by default
     None
 }

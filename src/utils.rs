@@ -29,7 +29,7 @@ pub async fn create(collection: mongodb::Collection<Asset>, json: JsonString) ->
     let asset = Asset {
         name: json.name.as_ref().unwrap().to_string(),
         location: json.location.unwrap(),
-        version: versions,
+        versions,
     };
 
     // find doc from name and location
@@ -114,7 +114,7 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: JsonString) ->
             Some(c) => {
                 println!("document found: {:?}", c);
 
-                let v = &c.version;
+                let v = &c.versions;
                 println!(":: {:?}", v);
                 // match cc {
                 //     Ok(c) => {

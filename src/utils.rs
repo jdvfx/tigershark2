@@ -11,27 +11,27 @@ pub use crate::assetdef::AssetVersion;
 //
 use mongodb::{bson::doc, Client, Collection};
 
-pub async fn create(collection: mongodb::Collection<Asset>, args: JsonString) -> CliOutput {
+pub async fn create(collection: mongodb::Collection<Asset>, json: JsonString) -> CliOutput {
     // > required:
     // asset_name, location, source
 
     let first_version = AssetVersion {
         version: 1 as u32,
-        datapath: args.datapath.unwrap(),
-        source: args.source.unwrap(),
+        datapath: json.datapath.unwrap(),
+        source: json.source.unwrap(),
         approved: false,
         status: AssetStatus::Online,
     };
 
     let asset = Asset {
-        name: args.name.as_ref().unwrap().to_string(),
-        location: args.location.unwrap(),
+        name: json.name.as_ref().unwrap().to_string(),
+        location: json.location.unwrap(),
         version: first_version,
     };
 
     // find doc from name and location
     let cursor = collection
-        .find_one(Some(doc! { "name": &args.name }), None)
+        .find_one(Some(doc! { "name": &json.name }), None)
         .await;
 
     match cursor {
@@ -80,26 +80,65 @@ pub async fn create(collection: mongodb::Collection<Asset>, args: JsonString) ->
     //     output: "asset created".to_owned(),
     // }
 }
-pub fn update(collection: mongodb::Collection<Asset>, args: JsonString) -> CliOutput {
+pub async fn update(collection: mongodb::Collection<Asset>, json: JsonString) -> CliOutput {
     // > required:
     // asset_name, location, source
     // OR
     // asset_id
 
-    println!("update asset");
 
-    // get latest version and increment
-    // create new Version struct and push to Vec > add to collection
+    // ------------------- FIND BY ID --------------------------------
+    // this should be done in utils.rs (we are just parsing arguments here)
 
-    println!("collection: {:?}", collection);
-    println!("Asset: {:?}", args);
+    // let objid = ObjectId::parse_str(&asset.id.unwrap());
+    // let objid_: ObjectId;
+    // if objid.is_ok() {
+    //     // let cursor = coll.find_one(Some(doc! { "_id": &objid.unwrap() }), None).await;
+    //     let cursor = coll.find_one(Some(doc! { "_id": &objid.Ok() }), None).await;
+    // }
+    // ---------------------------------------------------------------
 
-    CliOutput {
-        status: Status::Ok,
-        output: "asset updated".to_owned(),
+
+
+    // find doc from name and location
+    let cursor = collection
+        .find_one(
+            Some(doc! { "name": &json.name , "location": &json.location}),
+            None,
+        )
+        .await;
+
+    match cursor {
+        Ok(c) => match &c {
+            Some(c) => CliOutput {
+                status: Status::Ok,
+                output: "Asset found in DB".to_owned(),
+            },
+            None => CliOutput {
+                status: Status::Err,
+                output: format!("Asset not found in DB "),
+            },
+        },
+        Err(c) => CliOutput {
+            status: Status::Err,
+            output: format!("DB Quiery Error {}", c),
+        },
     }
+
+    // println!("update asset");
+
+    // // get latest version and increment
+    // // create new Version struct and push to Vec > add to collection
+
+    // println!("collection: {:?}", collection);
+    // println!("Asset: {:?}", args);
+
+    // CliOutput {
+    //     status: Status::Ok,
+    //     output: "asset updated".to_owned(),
+    // }
 }
-pub fn get_source(collection: mongodb::Collection<Asset>, args: JsonString) -> CliOutput {
+pub async fn get_source(collection: mongodb::Collection<Asset>, args: JsonString) -> CliOutput {
     // > required:
     // datapath
 
@@ -117,7 +156,7 @@ pub fn get_source(collection: mongodb::Collection<Asset>, args: JsonString) -> C
     }
 }
 
-pub fn delete(collection: mongodb::Collection<Asset>, args: JsonString) -> CliOutput {
+pub async fn delete(collection: mongodb::Collection<Asset>, args: JsonString) -> CliOutput {
     // > required:
     // asset_name, location, source, version
     // OR
@@ -136,7 +175,7 @@ pub fn delete(collection: mongodb::Collection<Asset>, args: JsonString) -> CliOu
     }
 }
 
-pub fn get_latest(collection: mongodb::Collection<Asset>, args: JsonString) -> CliOutput {
+pub async fn get_latest(collection: mongodb::Collection<Asset>, args: JsonString) -> CliOutput {
     // > required:
     // asset_name, location, source
     // OR

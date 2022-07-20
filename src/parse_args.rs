@@ -25,7 +25,7 @@ pub enum CommandType {
 #[derive(Debug)]
 pub struct Command {
     pub command: CommandType,
-    pub args: JsonString,
+    pub json: JsonString,
     // pub asset: Asset,
 }
 
@@ -81,23 +81,10 @@ pub fn get_args() -> Option<Command> {
         "create" => {
             if a_name && a_location && a_source && a_datapath {
                 println!(">create");
-                // let first_version = AssetVersion {
-                //     version: 1 as u32,
-                //     datapath: asset.datapath.unwrap(),
-                //     source: asset.source.unwrap(),
-                //     approved: false,
-                //     status: Status::Online,
-                // };
-
-                // let asset = Asset {
-                //     name: asset.name.unwrap(),
-                //     location: asset.location.unwrap(),
-                //     version: first_version,
-                // };
                 let command = CommandType::Create;
                 return Some(Command {
                     command,
-                    args: asset,
+                    json: asset,
                 });
             } else {
                 println!("create : Asset missing some Keys");
@@ -107,41 +94,18 @@ pub fn get_args() -> Option<Command> {
             if a_name && a_location || a_id {
                 if a_id {
                     println!(">update (using ID)");
-
-                    // let dummy_version = AssetVersion {
-                    //     version: 1 as u32,
-                    //     datapath: "dummy".to_owned(),
-                    //     source: "dummy".to_owned(),
-                    //     approved: false,
-                    //     status: Status::Online,
-                    // };
-
-                    // let asset = Asset {
-                    //     name: asset.name.unwrap(),
-                    //     location: asset.location.unwrap(),
-                    //     version: dummy_version,
-                    // };
-
                     let command = CommandType::Update;
                     return Some(Command {
                         command,
-                        args: asset,
+                        json: asset,
                     });
-                    // this should be done in utils.rs (we are just parsing arguments here)
-
-                    // let objid = ObjectId::parse_str(&asset.id.unwrap());
-                    // let objid_: ObjectId;
-                    // if objid.is_ok() {
-                    //     // let cursor = coll.find_one(Some(doc! { "_id": &objid.unwrap() }), None).await;
-                    //     let cursor = coll.find_one(Some(doc! { "_id": &objid.Ok() }), None).await;
-                    // }
                 } else {
                     println!(">update");
 
                     let command = CommandType::Update;
                     return Some(Command {
                         command,
-                        args: asset,
+                        json: asset,
                     });
                     // this should be done in utils.rs (we are just parsing arguments here)
 

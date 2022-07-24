@@ -143,22 +143,47 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: JsonString) ->
         },
     }
 }
-pub async fn get_source(collection: mongodb::Collection<Asset>, args: JsonString) -> CliOutput {
-    // > required:
-    // datapath
-
+pub async fn get_source(collection: mongodb::Collection<Asset>, json: JsonString) -> CliOutput {
     println!("get source");
+    println!("....... {:?}", json);
 
-    // parse datapath and extract asset_name, location, version ?
-    // quiery and return source.
+    let cursor = collection
+        .find_one(
+            Some(doc! { "name": &json.name.unwrap() , "location": &json.location.unwrap()}),
+            None,
+        )
+        .await;
 
-    println!("collection: {:?}", collection);
-    println!("Asset: {:?}", args);
+    match cursor {
+        Ok(c) => match &c {
+            Some(c) => {
+                let v = &c.versions;
+                println!("{:?}", v);
+                for i in v {
+                    println!(">> version: {:?}", i);
+                }
 
-    CliOutput {
-        status: Status::Ok,
-        output: "source file: xxxx".to_owned(),
+                CliOutput {
+                    status: Status::Ok,
+                    output: "Asset found in DB".to_owned(),
+                }
+            }
+            None => CliOutput {
+                status: Status::Ok,
+                output: "Asset NOT found in DB!".to_owned(),
+            },
+        },
+
+        Err(c) => CliOutput {
+            status: Status::Err,
+            output: format!("DB Quiery Error: {}", c),
+        },
     }
+
+    // CliOutput {
+    //     status: Status::Ok,
+    //     output: "source file: xxxx".to_owned(),
+    // }
 }
 
 pub async fn delete(collection: mongodb::Collection<Asset>, args: JsonString) -> CliOutput {

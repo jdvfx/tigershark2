@@ -121,6 +121,14 @@ pub fn get_args() -> Option<Command> {
         "source" => {
             if a_name && a_location && a_version || a_id && a_version {
                 println!(">source");
+
+                // todo : search by ID and version
+                //
+                let command = CommandType::GetSource;
+                return Some(Command {
+                    command,
+                    json: asset,
+                });
             } else {
                 println!("source : Asset missing some Keys");
             }

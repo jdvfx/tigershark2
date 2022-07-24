@@ -1,4 +1,4 @@
 ./target/debug/tigershark2 -c source -a '{
-"name":"my other asset",
-"location":"my_location",
-"version":12}'
+"name":"Sphere",
+"location":"my_sphere_location",
+"version":1}'

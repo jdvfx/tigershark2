@@ -157,16 +157,19 @@ pub async fn get_source(collection: mongodb::Collection<Asset>, json: JsonString
     match cursor {
         Ok(c) => match &c {
             Some(c) => {
-                let v = &c.versions;
-                println!("{:?}", v);
-                for i in v {
-                    println!(">> version: {:?}", i);
+                for asset_version in &c.versions {
+                    if asset_version.version == json.version.unwrap() {
+                        let source = &asset_version.source;
+                        return CliOutput {
+                            status: Status::Ok,
+                            output: source.to_owned(),
+                        };
+                    }
                 }
-
-                CliOutput {
+                return CliOutput {
                     status: Status::Ok,
-                    output: "Asset found in DB".to_owned(),
-                }
+                    output: "Asset version not found".to_owned(),
+                };
             }
             None => CliOutput {
                 status: Status::Ok,

@@ -12,3 +12,4 @@ futures = "0.3.21"
 tokio = { version = "1.19.2", features = ["full"]}
 mongodb = "2.2.2"
 clap = { version = "3.2.8", features = ["derive"] }
+bson = "2.3.0"

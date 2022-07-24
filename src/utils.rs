@@ -9,13 +9,13 @@ pub use crate::assetdef::AssetVersion;
 // CRUD functions
 
 // HOLLY SHIT !!!!
-use mongodb::bson::Bson;
-impl From<AssetVersion> for Bson {
-    fn from(a: AssetVersion) -> Bson {
-        Bson::Array(a)
-        // Bson::Array(a.into_iter().map(|val| val.into()).collect())
-    }
-}
+// use mongodb::bson::Bson;
+// impl From<AssetVersion> for Bson {
+//     fn from(a: AssetVersion) -> Bson {
+//         Bson::Array(a.into())
+//         // Bson::Array(a.into_iter().map(|val| val.into()).collect())
+//     }
+// }
 
 // from: bson-run/src/bson.rs
 
@@ -25,6 +25,7 @@ impl From<AssetVersion> for Bson {
 //     }
 // }
 
+use bson::{bson, Bson};
 use mongodb::{bson::doc, Client, Collection};
 
 pub async fn create(collection: mongodb::Collection<Asset>, json: JsonString) -> CliOutput {
@@ -128,7 +129,7 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: JsonString) ->
     match cursor {
         Ok(c) => match &c {
             Some(c) => {
-                let mut versions = c.versions;
+                // let mut versions = c.versions;
                 // let mut new_versions = versions.to_owned();
 
                 let next_version = AssetVersion {
@@ -139,12 +140,33 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: JsonString) ->
                     status: AssetStatus::Online,
                 };
 
-                versions.push(next_version);
+                // TEMP FIX
+                // this works with an array of BSON objects
+                // need to convert AssetVersion to BSON
+                // and assetStatus to some Bson
+                // impl from <T> Bson missing for AssetVersion and AssetStatus
+
+                // create a version manually
+                let bson_version: Bson = bson!({
+                    "version": 20,
+                    "datapath":"my_file_20.hip",
+                    "source":"okok",
+                    "approved":false,
+                    "status":0,
+                });
+
+                // versions.push(next_version);
+                //
+                // let mut versions: Vec<AssetVersion> = Vec::new();
+                // versions.push(bson_version);
+                let mut v: Vec<Bson> = Vec::new();
+                v.push(bson_version);
 
                 let db_update_result = collection
                     .update_one(
                         doc! { "name": &json.name , "location":&json.location},
-                        doc! { "$push": { "versions": &next_version } },
+                        doc! { "$push": { "versions": &v } },
+                        // doc! { "$set": { "versions": &v } },
                         None,
                     )
                     .await;

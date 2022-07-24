@@ -91,7 +91,7 @@ pub fn get_args() -> Option<Command> {
             }
         }
         "update" => {
-            if a_name && a_location || a_id {
+            if a_name && a_location && a_source && a_datapath || a_id && a_source && a_datapath {
                 if a_id {
                     println!(">update (using ID)");
                     let command = CommandType::Update;
@@ -107,12 +107,6 @@ pub fn get_args() -> Option<Command> {
                         command,
                         json: asset,
                     });
-                    // this should be done in utils.rs (we are just parsing arguments here)
-
-                    // let cursor = coll
-                    //     .find_one(Some(doc! { "name": &a_name , "location":&a_location}), None)
-                    //     .await;
-                    //
                 }
             } else {
                 println!("update : Asset missing some Keys");

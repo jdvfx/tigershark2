@@ -1,15 +1,16 @@
 // Asset structure definition
+use bson;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum AssetStatus {
     Online,
     Purge,
     Delete,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AssetVersion {
     pub version: u32,
     pub datapath: String,

@@ -7,8 +7,24 @@ use crate::assetdef::AssetStatus;
 pub use crate::assetdef::AssetVersion;
 
 // CRUD functions
-//
-//
+
+// HOLLY SHIT !!!!
+use mongodb::bson::Bson;
+impl From<AssetVersion> for Bson {
+    fn from(a: AssetVersion) -> Bson {
+        Bson::Array(a)
+        // Bson::Array(a.into_iter().map(|val| val.into()).collect())
+    }
+}
+
+// from: bson-run/src/bson.rs
+
+// impl From<f32> for Bson {
+//     fn from(a: f32) -> Bson {
+//         Bson::Double(a.into())
+//     }
+// }
+
 use mongodb::{bson::doc, Client, Collection};
 
 pub async fn create(collection: mongodb::Collection<Asset>, json: JsonString) -> CliOutput {
@@ -112,10 +128,44 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: JsonString) ->
     match cursor {
         Ok(c) => match &c {
             Some(c) => {
-                println!("document found: {:?}", c);
+                let mut versions = c.versions;
+                // let mut new_versions = versions.to_owned();
 
-                let v = &c.versions;
-                println!(":: {:?}", v);
+                let next_version = AssetVersion {
+                    version: 2 as u32,
+                    datapath: json.datapath.unwrap(),
+                    source: json.source.unwrap(),
+                    approved: false,
+                    status: AssetStatus::Online,
+                };
+
+                versions.push(next_version);
+
+                let db_update_result = collection
+                    .update_one(
+                        doc! { "name": &json.name , "location":&json.location},
+                        doc! { "$push": { "versions": &next_version } },
+                        None,
+                    )
+                    .await;
+
+                // println!("document found: {:?}", c);
+
+                // let mut asset_versions = &c.versions;
+                // let last_version = asset_versions.get(asset_versions.len() - 1);
+                // match last_version {
+                //     Some(v) => {}
+                //     None => {
+                //         return CliOutput {
+                //             status: Status::Ok,
+                //             output: "No Asset version found - that's weird".to_owned(),
+                //         }
+                //     }
+                // }
+                // println!("last version:: {:?}", last_version);
+
+                // .....................
+
                 // match cc {
                 //     Ok(c) => {
                 //         let aa = c.get(0);

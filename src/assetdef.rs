@@ -1,8 +1,6 @@
 // Asset structure definition
 use bson;
-use mongodb::bson::Bson;
-use mongodb::{bson::doc, bson::Document};
-
+use mongodb::bson::{doc, Bson, Document};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -32,7 +30,6 @@ pub struct Asset {
 // Rust needs to know how to convert AssetVersion to Bson before
 // pushing it to the DB, needs a From<AssetVersion> Trait
 //
-
 impl From<AssetStatus> for Bson {
     fn from(a: AssetStatus) -> Bson {
         let b = match a {

@@ -1,9 +1,7 @@
 use clap::Parser;
 use serde::{Deserialize, Serialize};
 
-pub use crate::assetdef::Asset;
-pub use crate::assetdef::AssetStatus;
-pub use crate::assetdef::AssetVersion;
+pub use crate::assetdef::{Asset, AssetStatus, AssetVersion};
 
 use mongodb::bson::oid::ObjectId;
 

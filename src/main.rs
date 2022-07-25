@@ -1,6 +1,6 @@
 #![allow(dead_code, unused_variables, unused_assignments, unused_imports)]
 
-use mongodb::{bson::doc, bson::Document};
+use mongodb::bson::{doc, Document};
 use mongodb::{Client, Collection};
 
 pub mod parse_args;

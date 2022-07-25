@@ -1,12 +1,10 @@
 // connect to DB and return a Collection
 // for now it's just a string
 
-use crate::assetdef;
-
-use mongodb::bson::oid::ObjectId;
-use mongodb::{bson::doc, bson::Document};
+use mongodb::bson::{doc, oid::ObjectId, Document};
 use mongodb::{Client, Collection};
 
+use crate::assetdef;
 use assetdef::Asset;
 
 pub async fn connect_to_db() -> Option<mongodb::Collection<Asset>> {

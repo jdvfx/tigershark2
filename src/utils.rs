@@ -1,6 +1,5 @@
 use crate::errors::{CliOutput, Status};
-use crate::parse_args::Asset;
-use crate::parse_args::JsonString;
+use crate::parse_args::{Asset, JsonString};
 
 // pub use crate::assetdef::Asset;
 use crate::assetdef::AssetStatus;
@@ -69,19 +68,6 @@ pub async fn create(collection: mongodb::Collection<Asset>, json: JsonString) ->
             }
         }
     }
-
-    // -----------------------------------
-
-    // let insert_result = collection.insert_one(&asset, None).await;
-    // println!("create");
-    // println!("collection: {:?}", collection);
-    // println!("Asset: {:?}", asset);
-
-    // -----------------------------------
-    // CliOutput {
-    //     status: Status::Ok,
-    //     output: "asset created".to_owned(),
-    // }
 }
 
 // ------------------- FIND BY ID --------------------------------
@@ -94,14 +80,8 @@ pub async fn create(collection: mongodb::Collection<Asset>, json: JsonString) ->
 //     let cursor = coll.find_one(Some(doc! { "_id": &objid.Ok() }), None).await;
 // }
 // ---------------------------------------------------------------
-// ## ## ## ## ## ##
-// ## ## ## ## ## ##
-pub async fn update(collection: mongodb::Collection<Asset>, json: JsonString) -> CliOutput {
-    // > required:
-    // asset_name, location, source
-    // OR
-    // asset_id
 
+pub async fn update(collection: mongodb::Collection<Asset>, json: JsonString) -> CliOutput {
     let cursor = collection
         .find_one(
             Some(doc! { "name": &json.name , "location": &json.location}),
@@ -188,19 +168,9 @@ pub async fn get_source(collection: mongodb::Collection<Asset>, json: JsonString
             output: format!("DB Quiery Error: {}", c),
         },
     }
-
-    // CliOutput {
-    //     status: Status::Ok,
-    //     output: "source file: xxxx".to_owned(),
-    // }
 }
 
 pub async fn delete(collection: mongodb::Collection<Asset>, args: JsonString) -> CliOutput {
-    // > required:
-    // asset_name, location, source, version
-    // OR
-    // asset_id, version
-
     println!("mark asset for deletion");
 
     // find asset and update status to "purge"

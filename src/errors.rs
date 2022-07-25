@@ -14,16 +14,6 @@ pub struct CliOutput {
     pub output: String,
 }
 
-// let panic = CliOutput {
-//     status: Status::Err,
-//     output: "panic".to_owned(),
-// };
-// let exit = CliOutput {
-//     status: Status::Ok,
-//     output: "all good".to_owned(),
-// };
-// exit_or_panic(panic);
-
 pub fn exit_or_panic(cli_output: CliOutput) {
     //
     match cli_output.status {

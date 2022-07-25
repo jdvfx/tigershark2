@@ -1,3 +1,5 @@
 ./target/debug/tigershark2 -c update -a '{
-"name":"my other asset",
-"location":"my_location"}'
+"name":"Sphere",
+"location":"my_sphere_location",
+"datapath":"my other sphere datapath",
+"source":"another source of the sphere"}'

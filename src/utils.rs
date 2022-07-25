@@ -108,12 +108,30 @@ pub async fn get_source(collection: mongodb::Collection<Asset>, json: JsonString
     }
 }
 
-pub async fn delete(collection: mongodb::Collection<Asset>, args: JsonString) -> CliOutput {
+pub async fn delete(collection: mongodb::Collection<Asset>, json: JsonString) -> CliOutput {
     CliOutput::new("ok", "asset marked for deletion")
 }
 
-pub async fn get_latest(collection: mongodb::Collection<Asset>, args: JsonString) -> CliOutput {
-    CliOutput::new("ok", "latest version is: xxx")
+pub async fn get_latest(collection: mongodb::Collection<Asset>, json: JsonString) -> CliOutput {
+    let cursor = collection
+        .find_one(
+            Some(doc! { "name": &json.name , "location": &json.location}),
+            None,
+        )
+        .await;
+
+    match cursor {
+        Ok(c) => match &c {
+            Some(c) => {
+                let last_asset_version = c.versions.last();
+                let last_version: u32 = last_asset_version.unwrap().version;
+                // TO DO: stop being lazy and remove "unwrap"
+                CliOutput::new("ok", &last_version.to_string())
+            }
+            None => CliOutput::new("err", "Asset not found in DB"),
+        },
+        Err(c) => CliOutput::new("err", &format!("DB Quiery Error {}", c)),
+    }
 }
 
 // ------------------- FIND BY ID --------------------------------

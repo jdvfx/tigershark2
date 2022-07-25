@@ -74,6 +74,9 @@ pub fn get_args() -> Option<Command> {
 
     // --- COMMAND ---
     let c = args.command;
+
+    println!("command >>> {:?}", c);
+
     let cc: &str = &c;
     match cc {
         "create" => {
@@ -135,6 +138,11 @@ pub fn get_args() -> Option<Command> {
         "latest" => {
             if a_name && a_location || a_id {
                 println!(">latest");
+                let command = CommandType::GetLatest;
+                return Some(Command {
+                    command,
+                    json: asset,
+                });
             } else {
                 println!("latest : Asset missing some Keys");
             }

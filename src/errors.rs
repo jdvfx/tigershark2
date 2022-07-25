@@ -4,11 +4,12 @@ use std::process;
 // - a message
 // - an exitcode (101:panic, 0:normal exit)
 
+#[derive(Debug)]
 pub enum Status {
     Err,
     Ok,
 }
-
+#[derive(Debug)]
 pub struct CliOutput {
     pub status: Status,
     pub output: String,

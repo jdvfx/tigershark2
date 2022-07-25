@@ -14,6 +14,19 @@ pub struct CliOutput {
     pub output: String,
 }
 
+impl CliOutput {
+    pub fn new(status: &str, output: &str) -> Self {
+        let status = match status {
+            "err" => Status::Err,
+            _ => Status::Ok,
+        };
+        CliOutput {
+            status,
+            output: output.to_owned(),
+        }
+    }
+}
+
 pub fn exit_or_panic(cli_output: CliOutput) {
     //
     match cli_output.status {

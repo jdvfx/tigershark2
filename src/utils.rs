@@ -64,6 +64,11 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: JsonString) ->
                     approved: false,
                     status: AssetStatus::Online,
                 };
+
+                // TO DO: check if another version has the same datapath
+                // if so, that asset doesn't need to be inserted
+                // should return an Error
+
                 // push a new AssetVersion into versions vector
                 let db_update_result = collection
                     .update_one(

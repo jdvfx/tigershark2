@@ -1,4 +1,4 @@
-./target/debug/tigershark2 -c update -a '{
+../target/debug/tigershark2 -c update -a '{
 "name":"Sphere",
 "location":"my_sphere_location",
 "datapath":"my other sphere datapath",

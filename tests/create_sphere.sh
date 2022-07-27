@@ -1,4 +1,4 @@
-./target/debug/tigershark2 -c create -a '{
+../target/debug/tigershark2 -c create -a '{
 "name":"Sphere",
 "location":"my_sphere_location",
 "source":"source_that_created_sphere",

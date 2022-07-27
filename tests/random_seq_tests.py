@@ -12,11 +12,15 @@ ts_exec+="/target/debug/tigershark2"
 
 command = ts_exec
 
+
+commands = ["create","latest","update","source"]
+
+
 myjson ={\
-"name":"Ball",\
-"location":"my_ball_location",\
-"source":"source_that_created_sphere",\
-"datapath":"/my/data/path/mysphere"}
+"name":"Pink",\
+"location":"my pink location",\
+"source":"source_that_created PINK",\
+"datapath":"/my/data/path/pink"}
 
 # return tuple with (ErrorCode,output)
 def db_insert(myjson):

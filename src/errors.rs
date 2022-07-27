@@ -37,7 +37,7 @@ pub fn exit_or_panic(cli_output: CliOutput) {
         }
         Status::Err => {
             print!("{}", cli_output.output);
-            panic!();
+            panic!(">>panic<<");
             // exitcode=101
         }
     }

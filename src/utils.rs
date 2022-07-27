@@ -78,7 +78,7 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: JsonString) ->
                     )
                     .await;
 
-                CliOutput::new("ok", "Asset found in DB")
+                CliOutput::new("ok", "New version inserted")
             }
             None => CliOutput::new("err", "Asset not found in DB"),
         },
@@ -86,9 +86,6 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: JsonString) ->
     }
 }
 pub async fn get_source(collection: mongodb::Collection<Asset>, json: JsonString) -> CliOutput {
-    println!("get source");
-    println!("....... {:?}", json);
-
     let cursor = collection
         .find_one(
             Some(doc! { "name": &json.name.unwrap() , "location": &json.location.unwrap()}),

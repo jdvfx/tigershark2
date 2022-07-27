@@ -19,7 +19,7 @@ async fn main() {
     // parse args
     let command = parse_args::get_args();
     match command {
-        Some(c) => {
+        Ok(c) => {
             // Connect to DB
             let collection = db::connect_to_db();
             match collection.await {
@@ -39,7 +39,7 @@ async fn main() {
                 }
             }
         }
-        None => cli_output = CliOutput::new("err", "No Command"),
+        Err(o) => cli_output = o,
     }
     //
     exit_or_panic(cli_output);

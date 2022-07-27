@@ -24,7 +24,6 @@ pub enum CommandType {
 pub struct Command {
     pub command: CommandType,
     pub json: JsonString,
-    // pub asset: Asset,
 }
 
 /// CLI Asset tracker with MondoDB
@@ -75,13 +74,10 @@ pub fn get_args() -> Option<Command> {
     // --- COMMAND ---
     let c = args.command;
 
-    println!("command >>> {:?}", c);
-
     let cc: &str = &c;
     match cc {
         "create" => {
             if a_name && a_location && a_source && a_datapath {
-                println!(">create");
                 let command = CommandType::Create;
                 return Some(Command {
                     command,
@@ -94,15 +90,13 @@ pub fn get_args() -> Option<Command> {
         "update" => {
             if a_name && a_location && a_source && a_datapath || a_id && a_source && a_datapath {
                 if a_id {
-                    println!(">update (using ID)");
+                    // NOT IMPLEMENTED YET
                     let command = CommandType::Update;
                     return Some(Command {
                         command,
                         json: asset,
                     });
                 } else {
-                    println!(">update");
-
                     let command = CommandType::Update;
                     return Some(Command {
                         command,
@@ -115,10 +109,7 @@ pub fn get_args() -> Option<Command> {
         }
         "source" => {
             if a_name && a_location && a_version || a_id && a_version {
-                println!(">source");
-
                 // todo : search by ID and version
-                //
                 let command = CommandType::GetSource;
                 return Some(Command {
                     command,

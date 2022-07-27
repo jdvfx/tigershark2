@@ -29,7 +29,6 @@ impl CliOutput {
 }
 
 pub fn exit_or_panic(cli_output: CliOutput) {
-    //
     match cli_output.status {
         Status::Ok => {
             print!("{}", cli_output.output);

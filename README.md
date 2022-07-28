@@ -7,6 +7,11 @@ is a CLI based 3D asset version tracking tool with simple CRUD functions using M
 - get_source (path of file that created the asset)
 - delete (tag for deletion, a separate tool does the actual deletion)
 
+syntax:
+./tigershark2 -c create -a '{"name":"my_asset","location":"myasset_location","datapath":"/data/myasset","source":"/sources/myasset_source"}'
+
+
+
 
 each asset is stored in MongoDB as such:
 
@@ -18,7 +23,7 @@ each asset is stored in MongoDB as such:
       - version: 1 <br>
       - datapath: my_file_path <br>
       - source: file_that_created_the_asset <br>
-      - approved: false <br> 
+      - approved: false <br>
       - status: Online <br>
     } <br>
     - 1 { <br>

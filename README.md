@@ -7,9 +7,13 @@ is a CLI based 3D asset version tracking tool with simple CRUD functions using M
 - get_source (path of file that created the asset)
 - delete (tag for deletion, a separate tool does the actual deletion)
 
-syntax:
+syntax:<br>
+
+> insert new asset<br>
 ./tigershark2 -c create -a '{"name":"my_asset","location":"myasset_location","datapath":"/data/myasset","source":"/sources/myasset_source"}'
 
+> find latest version of an asset<br>
+./tigershark2 -c latest -a '{"name":"my_asset","location":"myasset_location"}'
 
 
 

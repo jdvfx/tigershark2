@@ -1,5 +1,4 @@
-use crate::assetdef::AssetStatus;
-use crate::assetdef::AssetVersion;
+use crate::assetdef::{AssetStatus,AssetVersion};
 use crate::errors::{CliOutput, Status};
 use crate::parse_args::{Asset, JsonString};
 use mongodb::{bson::doc, Client, Collection};

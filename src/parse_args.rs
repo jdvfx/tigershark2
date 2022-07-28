@@ -93,7 +93,7 @@ pub fn get_args() -> Result<Command, CliOutput> {
         "update" => {
             if a_name && a_location && a_source && a_datapath || a_id && a_source && a_datapath {
                 if a_id {
-                    // NOT IMPLEMENTED YET
+                    // TODO: NOT IMPLEMENTED YET
                     let command = CommandType::Update;
                     Ok(Command {
                         command,

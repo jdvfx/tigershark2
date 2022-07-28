@@ -7,11 +7,10 @@ pub mod parse_args;
 use errors::{exit_or_panic, CliOutput, Status};
 use parse_args::CommandType;
 
+mod assetdef;
 pub mod db;
 pub mod errors;
 pub mod utils;
-
-mod assetdef;
 
 #[tokio::main]
 async fn main() {

@@ -82,12 +82,12 @@ pub fn get_args() -> Result<Command, CliOutput> {
         "create" => {
             if a_name && a_location && a_source && a_datapath {
                 let command = CommandType::Create;
-                return Ok(Command {
+                Ok(Command {
                     command,
                     json: asset,
-                });
+                })
             } else {
-                return Err(CliOutput::new("err", "latest : Asset missing some Keys"));
+                Err(CliOutput::new("err", "latest : Asset missing some Keys"))
             }
         }
         "update" => {
@@ -95,54 +95,52 @@ pub fn get_args() -> Result<Command, CliOutput> {
                 if a_id {
                     // NOT IMPLEMENTED YET
                     let command = CommandType::Update;
-                    return Ok(Command {
+                    Ok(Command {
                         command,
                         json: asset,
-                    });
+                    })
                 } else {
                     let command = CommandType::Update;
-                    return Ok(Command {
+                    Ok(Command {
                         command,
                         json: asset,
-                    });
+                    })
                 }
             } else {
-                return Err(CliOutput::new("err", "latest : Asset missing some Keys"));
+                Err(CliOutput::new("err", "latest : Asset missing some Keys"))
             }
         }
         "source" => {
             if a_name && a_location && a_version || a_id && a_version {
                 // todo : search by ID and version
                 let command = CommandType::GetSource;
-                return Ok(Command {
+                Ok(Command {
                     command,
                     json: asset,
-                });
+                })
             } else {
-                return Err(CliOutput::new("err", "latest : Asset missing some Keys"));
+                Err(CliOutput::new("err", "latest : Asset missing some Keys"))
             }
         }
         "delete" => {
             if a_name && a_location && a_version || a_id && a_version {
-                return Err(CliOutput::new("ok", "Delete: TODO"));
+                Err(CliOutput::new("ok", "Delete: TODO"))
             } else {
-                return Err(CliOutput::new("err", "latest : Asset missing some Keys"));
+                Err(CliOutput::new("err", "latest : Asset missing some Keys"))
             }
         }
         "latest" => {
             if a_name && a_location || a_id {
                 let command = CommandType::GetLatest;
-                return Ok(Command {
+                Ok(Command {
                     command,
                     json: asset,
-                });
+                })
             } else {
-                return Err(CliOutput::new("err", "latest : Asset missing some Keys"));
+                Err(CliOutput::new("err", "latest : Asset missing some Keys"))
             }
         }
-        _ => {
-            return Err(CliOutput::new("err", "invalid a command"));
-        }
+        _ => Err(CliOutput::new("err", "invalid a command")),
     }
 
     //return no command by default

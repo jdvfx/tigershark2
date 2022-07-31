@@ -124,7 +124,11 @@ pub fn get_args() -> Result<Command, CliOutput> {
         }
         "delete" => {
             if a_name && a_location && a_version || a_id && a_version {
-                Err(CliOutput::new("ok", "Delete: TODO"))
+                let command = CommandType::Delete;
+                Ok(Command {
+                    command,
+                    json: asset,
+                })
             } else {
                 Err(CliOutput::new("err", "latest : Asset missing some Keys"))
             }

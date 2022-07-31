@@ -1,4 +1,4 @@
-use crate::assetdef::{AssetStatus,AssetVersion};
+use crate::assetdef::{AssetStatus, AssetVersion};
 use crate::errors::{CliOutput, Status};
 use crate::parse_args::{Asset, JsonString};
 use mongodb::{bson::doc, Client, Collection};
@@ -110,7 +110,28 @@ pub async fn get_source(collection: mongodb::Collection<Asset>, json: JsonString
 }
 
 pub async fn delete(collection: mongodb::Collection<Asset>, json: JsonString) -> CliOutput {
-    CliOutput::new("ok", "asset marked for deletion")
+
+    let cursor = collection
+        .find_one(
+            Some(doc! { "name": &json.name , "location": &json.location}),
+            None,
+        )
+        .await;
+
+    match cursor {
+        Ok(c) => match &c {
+            Some(c) => {
+                let versions = &c.versions;
+                for i in versions {
+                    println!(">ver: {:?}", i);
+                }
+                CliOutput::new("ok", "trying to delete")
+            }
+            None => CliOutput::new("err", "Asset not found in DB ... "),
+        },
+        Err(c) => CliOutput::new("err", &format!("DB Quiery Error {}", c)),
+    }
+    // CliOutput::new("ok", "asset marked for deletion")
 }
 
 pub async fn get_latest(collection: mongodb::Collection<Asset>, json: JsonString) -> CliOutput {

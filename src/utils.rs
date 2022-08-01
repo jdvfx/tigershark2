@@ -110,35 +110,18 @@ pub async fn get_source(collection: mongodb::Collection<Asset>, json: JsonString
 }
 
 pub async fn delete(collection: mongodb::Collection<Asset>, json: JsonString) -> CliOutput {
+    let db_update_result = collection
+    .update_one(
+        doc! { "name": &json.name, "location": &json.location, "versions.version":&json.version},
+        doc! { "$set": { "versions.$.status": "Purge" } },
+        None,
+    )
+    .await;
 
-
-    // TODO : should use update_one directly, don't need to find_one firts
-    let cursor = collection
-        .find_one(
-            Some(doc! { "name": &json.name , "location": &json.location}),
-            None,
-        )
-        .await;
-
-    match cursor {
-        Ok(c) => match &c {
-            Some(c) => {
-                let db_update_result = collection
-                .update_one(
-                    doc! { "name": &json.name, "location": &json.location, "versions.version":&json.version},
-                    doc! { "$set": { "versions.$.status": "Purge" } },
-                    None,
-                )
-                .await;
-                // TODO: handle the result, could fail....
-
-                CliOutput::new("ok", "marked for purge")
-            }
-            None => CliOutput::new("err", "Asset not found in DB ... "),
-        },
-        Err(c) => CliOutput::new("err", &format!("DB Quiery Error {}", c)),
+    match db_update_result {
+        Ok(..) => CliOutput::new("ok", "marked for purge"),
+        Err(e) => CliOutput::new("err", &format!("Delete failed:{:?}", e)),
     }
-    // CliOutput::new("ok", "asset marked for deletion")
 }
 
 pub async fn get_latest(collection: mongodb::Collection<Asset>, json: JsonString) -> CliOutput {

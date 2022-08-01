@@ -76,7 +76,7 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: JsonString) ->
                         None,
                     )
                     .await;
-
+                // TODO: handle the result, could fail....
                 CliOutput::new("ok", "New version inserted")
             }
             None => CliOutput::new("err", "Asset not found in DB"),
@@ -111,6 +111,8 @@ pub async fn get_source(collection: mongodb::Collection<Asset>, json: JsonString
 
 pub async fn delete(collection: mongodb::Collection<Asset>, json: JsonString) -> CliOutput {
 
+
+    // TODO : should use update_one directly, don't need to find_one firts
     let cursor = collection
         .find_one(
             Some(doc! { "name": &json.name , "location": &json.location}),
@@ -121,11 +123,16 @@ pub async fn delete(collection: mongodb::Collection<Asset>, json: JsonString) ->
     match cursor {
         Ok(c) => match &c {
             Some(c) => {
-                let versions = &c.versions;
-                for i in versions {
-                    println!(">ver: {:?}", i);
-                }
-                CliOutput::new("ok", "trying to delete")
+                let db_update_result = collection
+                .update_one(
+                    doc! { "name": &json.name, "location": &json.location, "versions.version":&json.version},
+                    doc! { "$set": { "versions.$.status": "Purge" } },
+                    None,
+                )
+                .await;
+                // TODO: handle the result, could fail....
+
+                CliOutput::new("ok", "marked for purge")
             }
             None => CliOutput::new("err", "Asset not found in DB ... "),
         },

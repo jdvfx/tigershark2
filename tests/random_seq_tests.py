@@ -8,7 +8,10 @@ ts_exec = os.getcwd()
 if ts_exec.endswith("/tests"):
     ts_exec = re.sub("/tests","",ts_exec)
 
-ts_exec+="/target/debug/tigershark2"
+
+exe = "release"
+
+ts_exec+="/target/"+exe+"/tigershark2"
 
 
 
@@ -47,7 +50,7 @@ asset_names = ["sphere","cube","cone","volume","point","torus","plane","grid","t
 letters = "abcdefgh"
 
 
-for i in range(10):
+for i in range(100):
 
     randomchar = random.choice(letters)
     a=  random.choice(asset_names) + "_" + randomchar

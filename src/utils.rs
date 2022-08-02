@@ -110,7 +110,7 @@ pub async fn get_source(collection: mongodb::Collection<Asset>, json: JsonString
 }
 
 pub async fn delete(collection: mongodb::Collection<Asset>, json: JsonString) -> CliOutput {
-    let db_update_result = collection
+    let db_delete_result = collection
     .update_one(
         doc! { "name": &json.name, "location": &json.location, "versions.version":&json.version},
         doc! { "$set": { "versions.$.status": "Purge" } },
@@ -118,8 +118,29 @@ pub async fn delete(collection: mongodb::Collection<Asset>, json: JsonString) ->
     )
     .await;
 
-    match db_update_result {
-        Ok(..) => CliOutput::new("ok", "marked for purge"),
+    println!(">>>{:?}<<<", &db_delete_result);
+
+    // db_delete_result.unwrap().modified_count
+    // db_delete_result.unwrap().matched_count
+
+    // match o.modified_count {
+    // 0 => CliOutput::new("err", "Delete failed"),
+    // _ => CliOutput::new(
+    //     "ok",
+    //     &format!("{:?} v{:?} marked for purge", &json.name, &json.version),
+    // ),
+
+    match db_delete_result {
+        Ok(o) => {
+            if o.matched_count == 0 {
+                return CliOutput::new("err", "Delete failed: asset version not found");
+            }
+
+            match o.modified_count {
+                0 => CliOutput::new("ok", "Already tagged for deletion"),
+                _ => CliOutput::new("ok", "Tagged for Deletion"),
+            }
+        }
         Err(e) => CliOutput::new("err", &format!("Delete failed:{:?}", e)),
     }
 }

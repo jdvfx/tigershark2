@@ -1,0 +1,4 @@
+../target/debug/tigershark2 -c delete -a '{
+"name":"random",
+"location":"/location/teapot",
+"version":2}'

@@ -1,8 +1,7 @@
 // connect to DB and return a Collection (Option)
 // for now the database and collection are hard-coded
 //
-use mongodb::bson::{doc, oid::ObjectId, Document};
-use mongodb::{Client, Collection};
+use mongodb::Client;
 
 use crate::assetdef;
 use assetdef::Asset;

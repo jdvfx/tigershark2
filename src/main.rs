@@ -1,10 +1,5 @@
-#![allow(dead_code, unused_variables, unused_assignments, unused_imports)]
-
-use mongodb::bson::{doc, Document};
-use mongodb::{Client, Collection};
-
 pub mod parse_args;
-use errors::{exit_or_panic, CliOutput, Status};
+use errors::{exit_or_panic, CliOutput};
 use parse_args::CommandType;
 
 mod assetdef;
@@ -14,7 +9,7 @@ pub mod utils;
 
 #[tokio::main]
 async fn main() {
-    let mut cli_output = CliOutput::new("err", "_");
+    let cli_output: CliOutput;
     // parse args
     let command = parse_args::get_args();
     match command {

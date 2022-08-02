@@ -1,5 +1,5 @@
 // Asset structure definition
-use mongodb::bson::{doc, Bson, Document};
+use mongodb::bson::{doc, Bson};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

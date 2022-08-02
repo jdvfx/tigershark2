@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 pub use crate::assetdef::{Asset, AssetStatus, AssetVersion};
 use crate::errors::CliOutput;
-use mongodb::bson::oid::ObjectId;
+// use mongodb::bson::oid::ObjectId;
 
 #[derive(Debug)]
 pub enum CommandType {
@@ -17,8 +17,8 @@ pub enum CommandType {
 // --create -c
 // --update -u
 // --source -s
-// --delete -d
 // --latest -l
+// --delete -d
 
 #[derive(Debug)]
 pub struct Command {
@@ -92,20 +92,12 @@ pub fn get_args() -> Result<Command, CliOutput> {
         }
         "update" => {
             if a_name && a_location && a_source && a_datapath || a_id && a_source && a_datapath {
-                if a_id {
-                    // TODO: NOT IMPLEMENTED YET
-                    let command = CommandType::Update;
-                    Ok(Command {
-                        command,
-                        json: asset,
-                    })
-                } else {
-                    let command = CommandType::Update;
-                    Ok(Command {
-                        command,
-                        json: asset,
-                    })
-                }
+                // if ID is used: handled in Utils
+                let command = CommandType::Update;
+                Ok(Command {
+                    command,
+                    json: asset,
+                })
             } else {
                 Err(CliOutput::new("err", "latest : Asset missing some Keys"))
             }
@@ -146,7 +138,4 @@ pub fn get_args() -> Result<Command, CliOutput> {
         }
         _ => Err(CliOutput::new("err", "invalid a command")),
     }
-
-    //return no command by default
-    // CliOutput::new("err", "parse failed")
 }

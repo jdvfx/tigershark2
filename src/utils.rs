@@ -1,7 +1,7 @@
 use crate::assetdef::{AssetStatus, AssetVersion};
-use crate::errors::{CliOutput, Status};
+use crate::errors::CliOutput;
 use crate::parse_args::{Asset, JsonString};
-use mongodb::{bson::doc, Client, Collection};
+use mongodb::bson::doc;
 
 // CRUD functions
 pub async fn create(collection: mongodb::Collection<Asset>, json: JsonString) -> CliOutput {
@@ -52,9 +52,10 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: JsonString) ->
     match cursor {
         Ok(c) => match &c {
             Some(c) => {
-                let last_version = c.versions.last();
-                let new_version: u32 = last_version.unwrap().version + 1;
-                // TO DO: stop being lazy and remove "unwrap"
+                let new_version: u32 = match c.versions.last() {
+                    Some(v) => v.version + 1,
+                    None => return CliOutput::new("err", "No Asset version found"),
+                };
 
                 let next_asset_version = AssetVersion {
                     version: new_version,

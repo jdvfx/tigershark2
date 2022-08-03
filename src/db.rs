@@ -6,14 +6,16 @@ use mongodb::Client;
 use crate::assetdef;
 use assetdef::Asset;
 
-pub async fn connect_to_db() -> Option<mongodb::Collection<Asset>> {
-    let uri = "mongodb://localhost:27017";
-    let client = Client::with_uri_str(uri).await;
-
+pub async fn connect_to_db(
+    uri: String,
+    db_name: String,
+    coll_name: String,
+) -> Option<mongodb::Collection<Asset>> {
+    let client = Client::with_uri_str(&uri).await;
     match client {
         Ok(c) => {
-            let database = c.database("sharks");
-            let collection: mongodb::Collection<Asset> = database.collection("tiger");
+            let database = c.database(&db_name);
+            let collection: mongodb::Collection<Asset> = database.collection(&coll_name);
             Some(collection)
         }
         Err(_e) => None,

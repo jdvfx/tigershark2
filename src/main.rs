@@ -15,7 +15,11 @@ async fn main() {
     match command {
         Ok(c) => {
             // Connect to DB
-            let collection = db::connect_to_db();
+            let uri: String = "mongodb://localhost:27017".to_owned();
+            let db_name: String = "sharks".to_owned();
+            let coll_name: String = "tiger".to_owned();
+            //
+            let collection = db::connect_to_db(uri, db_name, coll_name);
             match collection.await {
                 Some(collection) => {
                     let json = c.json;

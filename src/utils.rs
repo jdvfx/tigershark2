@@ -27,7 +27,7 @@ pub async fn create(collection: mongodb::Collection<Asset>, json: JsonString) ->
 
     match cursor {
         Ok(c) => match &c {
-            Some(c) => CliOutput::new("ok", "Asset already exists"),
+            Some(..) => CliOutput::new("ok", "Asset already exists"),
             None => {
                 // asset not found, then insert it
                 let insert_result = collection.insert_one(&asset, None).await;
@@ -37,7 +37,7 @@ pub async fn create(collection: mongodb::Collection<Asset>, json: JsonString) ->
                 }
             }
         },
-        Err(c) => CliOutput::new("err", &format!("DB Quiery Error {}", c)),
+        Err(e) => CliOutput::new("err", &format!("DB Quiery Error {}", e)),
     }
 }
 
@@ -77,8 +77,11 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: JsonString) ->
                         None,
                     )
                     .await;
+                match db_update_result {
+                    Ok(..) => CliOutput::new("ok", "New version inserted"),
+                    Err(e) => CliOutput::new("err", &format!("Error: {:?}", e)),
+                }
                 // TODO: handle the result, could fail....
-                CliOutput::new("ok", "New version inserted")
             }
             None => CliOutput::new("err", "Asset not found in DB"),
         },

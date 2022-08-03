@@ -7,8 +7,8 @@ use mongodb::bson::doc;
 pub async fn create(collection: mongodb::Collection<Asset>, json: JsonString) -> CliOutput {
     let first_version = AssetVersion {
         version: 1_u32,
-        datapath: json.datapath.unwrap(),
-        source: json.source.unwrap(),
+        datapath: json.datapath.unwrap_or("".to_owned()),
+        source: json.source.unwrap_or("".to_owned()),
         approved: false,
         status: AssetStatus::Online,
     };
@@ -16,8 +16,8 @@ pub async fn create(collection: mongodb::Collection<Asset>, json: JsonString) ->
     let versions: Vec<AssetVersion> = vec![first_version];
 
     let asset = Asset {
-        name: json.name.as_ref().unwrap().to_string(),
-        location: json.location.unwrap(),
+        name: json.name.as_ref().unwrap_or(&"".to_owned()).to_string(),
+        location: json.location.unwrap_or("".to_owned()),
         versions,
     };
 
@@ -59,8 +59,8 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: JsonString) ->
 
                 let next_asset_version = AssetVersion {
                     version: new_version,
-                    datapath: json.datapath.unwrap(),
-                    source: json.source.unwrap(),
+                    datapath: json.datapath.unwrap_or("".to_owned()),
+                    source: json.source.unwrap_or("".to_owned()),
                     approved: false,
                     status: AssetStatus::Online,
                 };
@@ -91,7 +91,7 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: JsonString) ->
 pub async fn get_source(collection: mongodb::Collection<Asset>, json: JsonString) -> CliOutput {
     let cursor = collection
         .find_one(
-            Some(doc! { "name": &json.name.unwrap() , "location": &json.location.unwrap()}),
+            Some(doc! { "name": &json.name.unwrap_or("".to_owned()) , "location": &json.location.unwrap_or("".to_owned())}),
             None,
         )
         .await;
@@ -100,7 +100,7 @@ pub async fn get_source(collection: mongodb::Collection<Asset>, json: JsonString
         Ok(c) => match &c {
             Some(c) => {
                 for asset_version in &c.versions {
-                    if asset_version.version == json.version.unwrap() {
+                    if asset_version.version == json.version.unwrap_or(0) {
                         let source = &asset_version.source;
                         return CliOutput::new("ok", &source.to_owned());
                     }
@@ -121,18 +121,6 @@ pub async fn delete(collection: mongodb::Collection<Asset>, json: JsonString) ->
         None,
     )
     .await;
-
-    println!(">>>{:?}<<<", &db_delete_result);
-
-    // db_delete_result.unwrap().modified_count
-    // db_delete_result.unwrap().matched_count
-
-    // match o.modified_count {
-    // 0 => CliOutput::new("err", "Delete failed"),
-    // _ => CliOutput::new(
-    //     "ok",
-    //     &format!("{:?} v{:?} marked for purge", &json.name, &json.version),
-    // ),
 
     match db_delete_result {
         Ok(o) => {
@@ -160,10 +148,11 @@ pub async fn get_latest(collection: mongodb::Collection<Asset>, json: JsonString
     match cursor {
         Ok(c) => match &c {
             Some(c) => {
-                let last_asset_version = c.versions.last();
-                let last_version: u32 = last_asset_version.unwrap().version;
-                // TO DO: stop being lazy and remove "unwrap"
-                CliOutput::new("ok", &last_version.to_string())
+                let last_version: u32 = match c.versions.last() {
+                    Some(v) => v.version,
+                    None => return CliOutput::new("err", "No version found"),
+                };
+                CliOutput::new("ok", &format!("{}", last_version))
             }
             None => CliOutput::new("err", "Asset not found in DB"),
         },

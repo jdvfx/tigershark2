@@ -113,14 +113,29 @@ pub async fn get_source(collection: mongodb::Collection<Asset>, json: AssetJson)
     }
 }
 
+// fn get_id(json:AssetJson) -> ObjectId{
+
+// }
+
 pub async fn delete(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
+    let filter: bson::Document;
+    if json.id != "" {
+        let objid = ObjectId::parse_str(json.id.to_string());
+        match objid {
+            Ok(o) => filter = doc! {"_id": o,"versions.version":&json.version},
+            Err(e) => return CliOutput::new("err", &format!("ID not found: {:?}", e)),
+        }
+    } else {
+        filter = doc! { "name": &json.name, "location": &json.location, "versions.version":&json.version};
+    }
+
     let db_delete_result = collection
-    .update_one(
-        doc! { "name": &json.name, "location": &json.location, "versions.version":&json.version},
-        doc! { "$set": { "versions.$.status": "Purge" } },
-        None,
-    )
-    .await;
+        .update_one(
+            filter,
+            doc! { "$set": { "versions.$.status": "Purge" } },
+            None,
+        )
+        .await;
 
     match db_delete_result {
         Ok(o) => {
@@ -138,7 +153,6 @@ pub async fn delete(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
 }
 
 pub async fn get_latest(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
-
     let filter: bson::Document;
     if json.id != "" {
         let objid = ObjectId::parse_str(json.id.to_string());
@@ -150,7 +164,7 @@ pub async fn get_latest(collection: mongodb::Collection<Asset>, json: AssetJson)
         filter = doc! { "name": &json.name , "location": &json.location};
     }
 
-    let cursor = collection.find_one(Some(filter), None).await;
+    let cursor = collection.find_one(filter, None).await;
 
     match cursor {
         Ok(c) => match &c {
@@ -166,4 +180,3 @@ pub async fn get_latest(collection: mongodb::Collection<Asset>, json: AssetJson)
         Err(c) => CliOutput::new("err", &format!("DB Quiery Error {}", c)),
     }
 }
-

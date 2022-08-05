@@ -42,14 +42,18 @@ pub async fn create(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
 }
 
 pub async fn update(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
-    // a_id && a_source && a_datapath
-    //
-    let cursor = collection
-        .find_one(
-            doc! { "name": &json.name , "location": &json.location},
-            None,
-        )
-        .await;
+    let filter: bson::Document;
+    if json.id != "" {
+        let objid = ObjectId::parse_str(json.id.to_string());
+        match objid {
+            Ok(o) => filter = doc! {"_id": o},
+            Err(e) => return CliOutput::new("err", &format!("ID not found: {:?}", e)),
+        }
+    } else {
+        filter = doc! { "name": &json.name , "location": &json.location};
+    }
+
+    let cursor = collection.find_one(filter.clone(), None).await;
 
     match cursor {
         Ok(c) => match &c {
@@ -74,7 +78,7 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
                 // push a new AssetVersion into versions vector
                 let db_update_result = collection
                     .update_one(
-                        doc! { "name": &json.name , "location":&json.location},
+                        filter,
                         doc! { "$push": { "versions": &next_asset_version } },
                         None,
                     )

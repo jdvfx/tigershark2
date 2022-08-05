@@ -1,3 +1,5 @@
+#![allow(dead_code, unused_variables, unused_assignments, unused_imports)]
+
 use crate::assetdef::{AssetStatus, AssetVersion};
 use crate::errors::CliOutput;
 use crate::parse_args::{Asset, AssetJson};
@@ -42,6 +44,7 @@ pub async fn create(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
 }
 
 pub async fn update(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
+    //
     let filter: bson::Document;
     if json.id != "" {
         let objid = ObjectId::parse_str(json.id.to_string());
@@ -58,6 +61,7 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
     match cursor {
         Ok(c) => match &c {
             Some(c) => {
+                // increment version number
                 let new_version: u32 = match c.versions.last() {
                     Some(v) => v.version + 1,
                     None => return CliOutput::new("err", "No Asset version found"),
@@ -87,7 +91,6 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
                     Ok(..) => CliOutput::new("ok", "New version inserted"),
                     Err(e) => CliOutput::new("err", &format!("Error: {:?}", e)),
                 }
-                // TODO: handle the result, could fail....
             }
             None => CliOutput::new("err", "Asset not found in DB"),
         },
@@ -95,6 +98,7 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
     }
 }
 pub async fn get_source(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
+    //
     let filter: bson::Document;
     if json.id != "" {
         let objid = ObjectId::parse_str(json.id.to_string());
@@ -125,11 +129,8 @@ pub async fn get_source(collection: mongodb::Collection<Asset>, json: AssetJson)
     }
 }
 
-// fn get_id(json:AssetJson) -> ObjectId{
-
-// }
-
 pub async fn delete(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
+    //
     let filter: bson::Document;
     if json.id != "" {
         let objid = ObjectId::parse_str(json.id.to_string());
@@ -165,6 +166,7 @@ pub async fn delete(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
 }
 
 pub async fn get_latest(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
+    //
     let filter: bson::Document;
     if json.id != "" {
         let objid = ObjectId::parse_str(json.id.to_string());

@@ -1,7 +1,7 @@
 use crate::assetdef::{AssetStatus, AssetVersion};
 use crate::errors::CliOutput;
 use crate::parse_args::{Asset, AssetJson};
-use mongodb::bson::doc;
+use mongodb::bson::{doc, oid::ObjectId};
 
 // CRUD functions
 pub async fn create(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
@@ -138,12 +138,19 @@ pub async fn delete(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
 }
 
 pub async fn get_latest(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
-    let cursor = collection
-        .find_one(
-            Some(doc! { "name": &json.name , "location": &json.location}),
-            None,
-        )
-        .await;
+
+    let filter: bson::Document;
+    if json.id != "" {
+        let objid = ObjectId::parse_str(json.id.to_string());
+        match objid {
+            Ok(o) => filter = doc! {"_id": o},
+            Err(e) => return CliOutput::new("err", &format!("ID not found: {:?}", e)),
+        }
+    } else {
+        filter = doc! { "name": &json.name , "location": &json.location};
+    }
+
+    let cursor = collection.find_one(Some(filter), None).await;
 
     match cursor {
         Ok(c) => match &c {
@@ -160,13 +167,3 @@ pub async fn get_latest(collection: mongodb::Collection<Asset>, json: AssetJson)
     }
 }
 
-// ------------------- FIND BY ID --------------------------------
-// this should be done in utils.rs (we are just parsing arguments here)
-
-// let objid = ObjectId::parse_str(&asset.id.unwrap());
-// let objid_: ObjectId;
-// if objid.is_ok() {
-//     // let cursor = coll.find_one(Some(doc! { "_id": &objid.unwrap() }), None).await;
-//     let cursor = coll.find_one(Some(doc! { "_id": &objid.Ok() }), None).await;
-// }
-// ---------------------------------------------------------------

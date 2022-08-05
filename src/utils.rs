@@ -165,18 +165,20 @@ pub async fn delete(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
     }
 }
 
-pub async fn get_latest(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
-    //
-    let filter: bson::Document;
+fn a(json: &AssetJson, filter: &mut bson::Document) {
     if json.id != "" {
         let objid = ObjectId::parse_str(json.id.to_string());
-        match objid {
-            Ok(o) => filter = doc! {"_id": o},
-            Err(e) => return CliOutput::new("err", &format!("ID not found: {:?}", e)),
+        if objid.is_ok() {
+            *filter = doc! {"_id": objid.unwrap()};
         }
-    } else {
-        filter = doc! { "name": &json.name , "location": &json.location};
     }
+    // return CliOutput::new("err", "No version found");
+}
+
+pub async fn get_latest(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
+    //
+    let mut filter: bson::Document = doc! { "name": &json.name , "location": &json.location};
+    a(&json, &mut filter);
 
     let cursor = collection.find_one(filter, None).await;
 

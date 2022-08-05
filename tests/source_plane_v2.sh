@@ -1,4 +1,3 @@
 ../target/debug/tigershark2 -c source -a '{
-"name":"box",
-"location":"/location/box",
+"id":"62e200bad51be3464ce4f76e",
 "version":2}'

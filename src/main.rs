@@ -11,25 +11,25 @@ pub mod utils;
 async fn main() {
     let cli_output: CliOutput;
     // parse args
-    let command = parse_args::get_args();
-    match command {
-        Ok(c) => {
+    let args = parse_args::get_args();
+    match args {
+        Ok(args) => {
             // Connect to DB
-            let uri: String = "mongodb://localhost:27017".to_owned();
-            let db_name: String = "sharks".to_owned();
-            let coll_name: String = "tiger".to_owned();
+            let uri: &str = "mongodb://localhost:27017";
+            let db_name: &str = "sharks";
+            let collection_name: &str = "tiger";
             //
-            let collection = db::connect_to_db(uri, db_name, coll_name);
+            let collection = db::connect_to_db(uri, db_name, collection_name);
             match collection.await {
-                Some(collection) => {
-                    let json = c.json;
+                Some(coll) => {
+                    let json = args.json;
                     // Execute one of the CRUD commands
-                    cli_output = match c.command {
-                        CommandType::Create => utils::create(collection, json).await,
-                        CommandType::Update => utils::update(collection, json).await,
-                        CommandType::GetSource => utils::get_source(collection, json).await,
-                        CommandType::Delete => utils::delete(collection, json).await,
-                        CommandType::GetLatest => utils::get_latest(collection, json).await,
+                    cli_output = match args.command {
+                        CommandType::Create => utils::create(coll, json).await,
+                        CommandType::Update => utils::update(coll, json).await,
+                        CommandType::GetSource => utils::get_source(coll, json).await,
+                        CommandType::Delete => utils::delete(coll, json).await,
+                        CommandType::GetLatest => utils::get_latest(coll, json).await,
                     };
                 }
                 None => {

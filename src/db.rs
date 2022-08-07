@@ -7,15 +7,15 @@ use crate::assetdef;
 use assetdef::Asset;
 
 pub async fn connect_to_db(
-    uri: String,
-    db_name: String,
-    coll_name: String,
+    uri: &str,
+    db_name: &str,
+    coll_name: &str,
 ) -> Option<mongodb::Collection<Asset>> {
-    let client = Client::with_uri_str(&uri).await;
+    let client = Client::with_uri_str(uri).await;
     match client {
         Ok(c) => {
-            let database = c.database(&db_name);
-            let collection: mongodb::Collection<Asset> = database.collection(&coll_name);
+            let database = c.database(db_name);
+            let collection: mongodb::Collection<Asset> = database.collection(coll_name);
             Some(collection)
         }
         Err(_e) => None,

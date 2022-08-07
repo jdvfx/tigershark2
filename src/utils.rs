@@ -7,10 +7,9 @@ use mongodb::bson::{doc, oid::ObjectId};
 
 // override search filter when using ID
 fn filter_by_id(json: &AssetJson, filter: &mut bson::Document) {
-    if json.id != "" {
-        match ObjectId::parse_str(json.id.to_string()) {
-            Ok(o) => *filter = doc! {"_id": o},
-            _ => (),
+    if !json.id.is_empty() {
+        if let Ok(id) = ObjectId::parse_str(&json.id) {
+            *filter = doc! {"_id": id}
         }
     }
 }

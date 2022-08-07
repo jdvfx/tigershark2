@@ -2,6 +2,8 @@
 use mongodb::bson::{doc, Bson};
 use serde::{Deserialize, Serialize};
 
+use crate::parse_args::AssetJson;
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub enum AssetStatus {
     Online,
@@ -23,6 +25,27 @@ pub struct Asset {
     pub name: String,
     pub location: String,
     pub versions: Vec<AssetVersion>,
+}
+// create first version of an asset when using the Create command
+impl Asset {
+    pub fn first_version(json: AssetJson) -> Self {
+        //
+        let first_version = AssetVersion {
+            version: 1_u32,
+            datapath: json.datapath,
+            source: json.source,
+            approved: false,
+            status: AssetStatus::Online,
+        };
+
+        let versions: Vec<AssetVersion> = vec![first_version];
+
+        Asset {
+            name: json.name,
+            location: json.location,
+            versions,
+        }
+    }
 }
 
 // used for update_one()

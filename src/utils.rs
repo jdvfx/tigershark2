@@ -17,21 +17,8 @@ fn filter_by_id(json: &AssetJson, filter: &mut bson::Document) {
 
 // CRUD functions
 pub async fn create(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
-    let first_version = AssetVersion {
-        version: 1_u32,
-        datapath: json.datapath,
-        source: json.source,
-        approved: false,
-        status: AssetStatus::Online,
-    };
-
-    let versions: Vec<AssetVersion> = vec![first_version];
-
-    let asset = Asset {
-        name: json.name,
-        location: json.location,
-        versions,
-    };
+    //
+    let asset = Asset::first_version(json);
 
     let cursor = collection
         .find_one(doc! { "name": &asset.name }, None)

@@ -5,6 +5,16 @@ use crate::errors::CliOutput;
 use crate::parse_args::{Asset, AssetJson};
 use mongodb::bson::{doc, oid::ObjectId};
 
+// override search filter when using ID
+fn filter_by_id(json: &AssetJson, filter: &mut bson::Document) {
+    if json.id != "" {
+        match ObjectId::parse_str(json.id.to_string()) {
+            Ok(o) => *filter = doc! {"_id": o},
+            _ => (),
+        }
+    }
+}
+
 // CRUD functions
 pub async fn create(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
     let first_version = AssetVersion {
@@ -45,16 +55,8 @@ pub async fn create(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
 
 pub async fn update(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
     //
-    let filter: bson::Document;
-    if json.id != "" {
-        let objid = ObjectId::parse_str(json.id.to_string());
-        match objid {
-            Ok(o) => filter = doc! {"_id": o},
-            Err(e) => return CliOutput::new("err", &format!("ID not found: {:?}", e)),
-        }
-    } else {
-        filter = doc! { "name": &json.name , "location": &json.location};
-    }
+    let mut filter: bson::Document = doc! { "name": &json.name , "location": &json.location};
+    filter_by_id(&json, &mut filter);
 
     let cursor = collection.find_one(filter.clone(), None).await;
 
@@ -99,16 +101,8 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
 }
 pub async fn get_source(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
     //
-    let filter: bson::Document;
-    if json.id != "" {
-        let objid = ObjectId::parse_str(json.id.to_string());
-        match objid {
-            Ok(o) => filter = doc! {"_id": o},
-            Err(e) => return CliOutput::new("err", &format!("ID not found: {:?}", e)),
-        }
-    } else {
-        filter = doc! { "name": &json.name , "location": &json.location};
-    }
+    let mut filter: bson::Document = doc! { "name": &json.name , "location": &json.location};
+    filter_by_id(&json, &mut filter);
 
     let cursor = collection.find_one(filter, None).await;
 
@@ -131,16 +125,9 @@ pub async fn get_source(collection: mongodb::Collection<Asset>, json: AssetJson)
 
 pub async fn delete(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
     //
-    let filter: bson::Document;
-    if json.id != "" {
-        let objid = ObjectId::parse_str(json.id.to_string());
-        match objid {
-            Ok(o) => filter = doc! {"_id": o,"versions.version":&json.version},
-            Err(e) => return CliOutput::new("err", &format!("ID not found: {:?}", e)),
-        }
-    } else {
-        filter = doc! { "name": &json.name, "location": &json.location, "versions.version":&json.version};
-    }
+    let mut filter: bson::Document =
+        doc! { "name": &json.name, "location": &json.location, "versions.version":&json.version};
+    filter_by_id(&json, &mut filter);
 
     let db_delete_result = collection
         .update_one(
@@ -165,20 +152,10 @@ pub async fn delete(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
     }
 }
 
-fn a(json: &AssetJson, filter: &mut bson::Document) {
-    if json.id != "" {
-        let objid = ObjectId::parse_str(json.id.to_string());
-        if objid.is_ok() {
-            *filter = doc! {"_id": objid.unwrap()};
-        }
-    }
-    // return CliOutput::new("err", "No version found");
-}
-
 pub async fn get_latest(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
     //
     let mut filter: bson::Document = doc! { "name": &json.name , "location": &json.location};
-    a(&json, &mut filter);
+    filter_by_id(&json, &mut filter);
 
     let cursor = collection.find_one(filter, None).await;
 

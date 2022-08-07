@@ -3,7 +3,6 @@ use serde::{Deserialize, Serialize};
 
 pub use crate::assetdef::{Asset, AssetStatus, AssetVersion};
 use crate::errors::CliOutput;
-// use mongodb::bson::oid::ObjectId;
 
 #[derive(Debug)]
 pub enum CommandType {
@@ -13,12 +12,6 @@ pub enum CommandType {
     Delete,
     GetLatest,
 }
-
-// --create -c
-// --update -u
-// --source -s
-// --latest -l
-// --delete -d
 
 #[derive(Debug)]
 pub struct Command {
@@ -73,6 +66,7 @@ fn json_unwrap_or(json_o: JsonOption) -> AssetJson {
 
 // pub fn get_args() -> Option<Command> {
 pub fn get_args() -> Result<Command, CliOutput> {
+    //
     let args = Args::parse();
 
     // --- ASSET ---
@@ -89,6 +83,7 @@ pub fn get_args() -> Result<Command, CliOutput> {
             ))
         }
     };
+    // to check if json values are present for the current command
     let a_name = asset.name.is_some();
     let a_location = asset.location.is_some();
     let a_source = asset.source.is_some();
@@ -100,16 +95,15 @@ pub fn get_args() -> Result<Command, CliOutput> {
     let asset_unwrapped: AssetJson = json_unwrap_or(asset);
 
     // --- COMMAND ---
-    let c = args.command;
+    // for each command, checks that the correct json values are present
+    let arg_command: &str = &args.command;
 
-    // for each command, checks that the correct asset attributes are present
-    let cc: &str = &c;
-    match cc {
+    match arg_command {
+        // match args.command {
         "create" => {
             if a_name && a_location && a_source && a_datapath {
-                let command = CommandType::Create;
                 Ok(Command {
-                    command,
+                    command: CommandType::Create,
                     json: asset_unwrapped,
                 })
             } else {
@@ -118,10 +112,8 @@ pub fn get_args() -> Result<Command, CliOutput> {
         }
         "update" => {
             if a_name && a_location && a_source && a_datapath || a_id && a_source && a_datapath {
-                // if ID is used: handled in Utils
-                let command = CommandType::Update;
                 Ok(Command {
-                    command,
+                    command: CommandType::Update,
                     json: asset_unwrapped,
                 })
             } else {
@@ -130,10 +122,8 @@ pub fn get_args() -> Result<Command, CliOutput> {
         }
         "source" => {
             if a_name && a_location && a_version || a_id && a_version {
-                // todo : search by ID and version
-                let command = CommandType::GetSource;
                 Ok(Command {
-                    command,
+                    command: CommandType::GetSource,
                     json: asset_unwrapped,
                 })
             } else {
@@ -142,9 +132,8 @@ pub fn get_args() -> Result<Command, CliOutput> {
         }
         "delete" => {
             if a_name && a_location && a_version || a_id && a_version {
-                let command = CommandType::Delete;
                 Ok(Command {
-                    command,
+                    command: CommandType::Delete,
                     json: asset_unwrapped,
                 })
             } else {
@@ -153,9 +142,8 @@ pub fn get_args() -> Result<Command, CliOutput> {
         }
         "latest" => {
             if a_name && a_location || a_id {
-                let command = CommandType::GetLatest;
                 Ok(Command {
-                    command,
+                    command: CommandType::GetLatest,
                     json: asset_unwrapped,
                 })
             } else {

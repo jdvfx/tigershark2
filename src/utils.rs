@@ -9,7 +9,11 @@ use mongodb::bson::{doc, oid::ObjectId};
 fn filter_by_id(json: &AssetJson, filter: &mut bson::Document) {
     if !json.id.is_empty() {
         if let Ok(id) = ObjectId::parse_str(&json.id) {
-            *filter = doc! {"_id": id}
+            if json.version != 0 {
+                *filter = doc! {"_id": id,"versions.version":&json.version}
+            } else {
+                *filter = doc! {"_id": id}
+            }
         }
     }
 }
@@ -63,10 +67,6 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
                     status: AssetStatus::Online,
                 };
 
-                // TO DO: check if another version has the same datapath
-                // if so, that asset doesn't need to be inserted
-                // should return an Error
-
                 // push a new AssetVersion into versions vector
                 let db_update_result = collection
                     .update_one(
@@ -114,6 +114,9 @@ pub async fn delete(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
     let mut filter: bson::Document =
         doc! { "name": &json.name, "location": &json.location, "versions.version":&json.version};
     filter_by_id(&json, &mut filter);
+    println!("_");
+    println!("{:?}", filter);
+    println!("_");
 
     let db_delete_result = collection
         .update_one(

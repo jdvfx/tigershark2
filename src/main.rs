@@ -6,6 +6,7 @@ mod assetdef;
 pub mod db;
 pub mod errors;
 pub mod utils;
+use std::env;
 
 #[tokio::main]
 async fn main() {
@@ -15,9 +16,12 @@ async fn main() {
     match args {
         Ok(args) => {
             // Connect to DB
-            let uri: &str = "mongodb://localhost:27017";
-            let db_name: &str = "sharks";
-            let collection_name: &str = "tiger";
+            let uri: &str =
+                &env::var("MONGODB_URI").expect("You must set the MONGODB_URI environment var!");
+            let db_name: &str =
+                &env::var("MONGODB_DB").expect("You must set the MONGODB_DB environment var!");
+            let collection_name: &str =
+                &env::var("MONGODB_COLL").expect("You must set the MONGODB_COLL environment var!");
             //
             let collection = db::connect_to_db(uri, db_name, collection_name);
             match collection.await {

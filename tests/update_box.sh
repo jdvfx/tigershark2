@@ -1,3 +1,4 @@
+source set_db_env.sh
 ../target/debug/tigershark2 -c update -a '{
 "name":"Box",
 "location":"my_box_location",

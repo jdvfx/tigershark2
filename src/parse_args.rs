@@ -8,9 +8,9 @@ use crate::errors::CliOutput;
 pub enum CommandType {
     Create,
     Update,
-    GetSource,
+    Source,
     Delete,
-    GetLatest,
+    Latest,
 }
 
 #[derive(Debug)]
@@ -52,7 +52,8 @@ pub struct AssetJson {
     pub version: u32,
     pub id: String,
 }
-//
+// create default empty values if missing
+// removes the need for unwrap() when executing CRUD commands
 fn json_unwrap_or(json_o: JsonOption) -> AssetJson {
     AssetJson {
         name: json_o.name.unwrap_or_else(|| "".to_owned()),
@@ -68,8 +69,7 @@ fn json_unwrap_or(json_o: JsonOption) -> AssetJson {
 pub fn get_args() -> Result<Command, CliOutput> {
     //
     let args = Args::parse();
-
-    // --- ASSET ---
+    // >>> ASSET ---
     // Asset is defined in assetdef.rs
     // get asset String from args and try to parse using struct above
     let asset_str = args.asset.to_string();
@@ -94,62 +94,46 @@ pub fn get_args() -> Result<Command, CliOutput> {
     // unpack JsonOption into JsonString
     let asset_unwrapped: AssetJson = json_unwrap_or(asset);
 
-    // --- COMMAND ---
+    // >>> COMMAND <<<
     // for each command, checks that the correct json values are present
     let arg_command: &str = &args.command;
 
     match arg_command {
-        // match args.command {
-        "create" => {
-            if a_name && a_location && a_source && a_datapath {
-                Ok(Command {
-                    command: CommandType::Create,
-                    json: asset_unwrapped,
-                })
-            } else {
-                Err(CliOutput::new("err", "latest : Asset missing some Keys"))
-            }
-        }
-        "update" => {
-            if a_name && a_location && a_source && a_datapath || a_id && a_source && a_datapath {
-                Ok(Command {
-                    command: CommandType::Update,
-                    json: asset_unwrapped,
-                })
-            } else {
-                Err(CliOutput::new("err", "latest : Asset missing some Keys"))
-            }
-        }
-        "source" => {
-            if a_name && a_location && a_version || a_id && a_version {
-                Ok(Command {
-                    command: CommandType::GetSource,
-                    json: asset_unwrapped,
-                })
-            } else {
-                Err(CliOutput::new("err", "latest : Asset missing some Keys"))
-            }
-        }
-        "delete" => {
-            if a_name && a_location && a_version || a_id && a_version {
-                Ok(Command {
-                    command: CommandType::Delete,
-                    json: asset_unwrapped,
-                })
-            } else {
-                Err(CliOutput::new("err", "latest : Asset missing some Keys"))
-            }
-        }
-        "latest" => {
-            if a_name && a_location || a_id {
-                Ok(Command {
-                    command: CommandType::GetLatest,
-                    json: asset_unwrapped,
-                })
-            } else {
-                Err(CliOutput::new("err", "latest : Asset missing some Keys"))
-            }
-        }
+        "create" => match a_name && a_location && a_source && a_datapath {
+            true => Ok(Command {
+                command: CommandType::Create,
+                json: asset_unwrapped,
+            }),
+            _ => Err(CliOutput::new("err", "latest : Asset missing some Keys")),
+        },
+        "update" => match (a_name && a_location || a_id) && a_source && a_datapath {
+            true => Ok(Command {
+                command: CommandType::Update,
+                json: asset_unwrapped,
+            }),
+            _ => Err(CliOutput::new("err", "latest : Asset missing some Keys")),
+        },
+        "source" => match (a_name && a_location || a_id) && a_version {
+            true => Ok(Command {
+                command: CommandType::Source,
+                json: asset_unwrapped,
+            }),
+            _ => Err(CliOutput::new("err", "latest : Asset missing some Keys")),
+        },
+        "delete" => match (a_name && a_location || a_id) && a_version {
+            true => Ok(Command {
+                command: CommandType::Delete,
+                json: asset_unwrapped,
+            }),
+            _ => Err(CliOutput::new("err", "latest : Asset missing some Keys")),
+        },
+        "latest" => match a_name && a_location || a_id {
+            true => Ok(Command {
+                command: CommandType::Latest,
+                json: asset_unwrapped,
+            }),
+            _ => Err(CliOutput::new("err", "latest : Asset missing some Keys")),
+        },
         _ => Err(CliOutput::new("err", "invalid a command")),
     }
 }

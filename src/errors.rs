@@ -1,9 +1,5 @@
 use std::process;
 
-// exit the program with:
-// - a message
-// - an exitcode (101:panic, 0:normal exit)
-
 #[derive(Debug)]
 pub enum Status {
     Err,
@@ -28,6 +24,9 @@ impl CliOutput {
     }
 }
 
+// exit the program with:
+// - a message
+// - an exitcode (101:panic, 0:normal exit)
 pub fn exit_or_panic(cli_output: CliOutput) {
     match cli_output.status {
         Status::Ok => {

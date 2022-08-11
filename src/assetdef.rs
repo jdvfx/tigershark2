@@ -51,7 +51,6 @@ impl Asset {
 // used for update_one()
 // Rust needs to know how to convert AssetVersion to Bson before
 // pushing it to the DB, needs a From<AssetVersion> Trait
-//
 impl From<AssetStatus> for Bson {
     fn from(a: AssetStatus) -> Bson {
         let b = match a {

@@ -1,6 +1,5 @@
 // connect to DB and return a Collection (Option)
-// for now the database and collection are hard-coded
-//
+// uri, db_name, collection are environment variables
 use mongodb::Client;
 
 use crate::assetdef;

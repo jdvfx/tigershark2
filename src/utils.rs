@@ -1,5 +1,3 @@
-#![allow(dead_code, unused_variables, unused_assignments, unused_imports)]
-
 use crate::assetdef::{AssetStatus, AssetVersion};
 use crate::errors::CliOutput;
 use crate::parse_args::{Asset, AssetJson};
@@ -85,7 +83,7 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
         Err(c) => CliOutput::new("err", &format!("DB Quiery Error {}", c)),
     }
 }
-pub async fn get_source(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
+pub async fn source(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
     //
     let mut filter: bson::Document = doc! { "name": &json.name , "location": &json.location};
     filter_by_id(&json, &mut filter);
@@ -114,9 +112,6 @@ pub async fn delete(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
     let mut filter: bson::Document =
         doc! { "name": &json.name, "location": &json.location, "versions.version":&json.version};
     filter_by_id(&json, &mut filter);
-    println!("_");
-    println!("{:?}", filter);
-    println!("_");
 
     let db_delete_result = collection
         .update_one(
@@ -141,7 +136,7 @@ pub async fn delete(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
     }
 }
 
-pub async fn get_latest(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
+pub async fn latest(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
     //
     let mut filter: bson::Document = doc! { "name": &json.name , "location": &json.location};
     filter_by_id(&json, &mut filter);

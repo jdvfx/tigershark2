@@ -17,11 +17,11 @@ async fn main() {
         Ok(args) => {
             // Connect to DB
             let uri: &str =
-                &env::var("MONGODB_URI").expect("You must set the MONGODB_URI environment var!");
+                &env::var("MONGODB_URI").expect("MONGODB_URI environment var not set!");
             let db_name: &str =
-                &env::var("MONGODB_DB").expect("You must set the MONGODB_DB environment var!");
+                &env::var("MONGODB_DB").expect("MONGODB_DB environment var not set!");
             let collection_name: &str =
-                &env::var("MONGODB_COLL").expect("You must set the MONGODB_COLL environment var!");
+                &env::var("MONGODB_COLL").expect("MONGODB_COLL environment var not set!");
             //
             let collection = db::connect_to_db(uri, db_name, collection_name);
             match collection.await {
@@ -31,9 +31,9 @@ async fn main() {
                     cli_output = match args.command {
                         CommandType::Create => utils::create(coll, json).await,
                         CommandType::Update => utils::update(coll, json).await,
-                        CommandType::GetSource => utils::get_source(coll, json).await,
+                        CommandType::Source => utils::source(coll, json).await,
                         CommandType::Delete => utils::delete(coll, json).await,
-                        CommandType::GetLatest => utils::get_latest(coll, json).await,
+                        CommandType::Latest => utils::latest(coll, json).await,
                     };
                 }
                 None => {
@@ -41,8 +41,7 @@ async fn main() {
                 }
             }
         }
-        Err(o) => cli_output = o,
+        Err(o) => cli_output = CliOutput::new("err", &format!("Error parsing args: {:?}", o)),
     }
-    //
     exit_or_panic(cli_output);
 }

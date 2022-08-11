@@ -16,7 +16,12 @@ fn filter_by_id(json: &AssetJson, filter: &mut bson::Document) {
     }
 }
 
-// CRUD functions
+/// inserts asset into DB
+/// # Required Json Asset fields
+/// * `name` : the name of the asset
+/// * `location` : asset location, typically: show/seq/shot
+/// * `source` : the file that created the asset
+/// * `datapath` : where the asset data is stored on disk
 pub async fn create(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
     //
     let asset = Asset::first_version(json);
@@ -41,6 +46,13 @@ pub async fn create(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
     }
 }
 
+/// insert new version of existing asset
+/// # Required Json Asset fields
+/// * `name` : the name of the asset
+/// * `location` : asset location, typically: show/seq/shot
+/// * `id` : DB id can be used instead of name+location
+/// * `source` : the file that created the asset
+/// * `datapath` : where the asset data is stored on disk
 pub async fn update(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
     //
     let mut filter: bson::Document = doc! { "name": &json.name , "location": &json.location};

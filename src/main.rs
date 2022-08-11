@@ -8,6 +8,17 @@ pub mod errors;
 pub mod utils;
 use std::env;
 
+/// Usage
+/// # 1) Set Environment variables
+/// export MONGODB_URI='mongodb://localhost:27017'
+/// export MONGODB_DB='sharks'
+/// export MONGODB_COLL='tiger'
+/// # 2) Insert a new asset
+/// ../target/debug/tigershark2 -c create -a '{
+/// "name":"Box",
+/// "location":"my_box_location",
+/// "source":"source_that_created_box",
+/// "datapath":"/my/data/path/mybox"}'
 #[tokio::main]
 async fn main() {
     let cli_output: CliOutput;

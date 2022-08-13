@@ -3,7 +3,7 @@ use crate::errors::CliOutput;
 use crate::parse_args::{Asset, AssetJson};
 use mongodb::bson::{doc, oid::ObjectId};
 
-// override search filter when using ID
+/// overrides search filter when using ID
 fn filter_by_id(json: &AssetJson, filter: &mut bson::Document) {
     if !json.id.is_empty() {
         if let Ok(id) = ObjectId::parse_str(&json.id) {
@@ -16,7 +16,7 @@ fn filter_by_id(json: &AssetJson, filter: &mut bson::Document) {
     }
 }
 
-/// inserts asset into DB
+/// Inserts asset into DB
 /// # Required Json Asset fields
 /// * `name` : the name of the asset
 /// * `location` : asset location, typically: show/seq/shot
@@ -46,7 +46,7 @@ pub async fn create(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
     }
 }
 
-/// insert new version of existing asset
+/// Insert new version of existing asset
 /// # Required Json Asset fields
 /// * `name` : the name of the asset
 /// * `location` : asset location, typically: show/seq/shot
@@ -95,6 +95,11 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
         Err(c) => CliOutput::new("err", &format!("DB Quiery Error {}", c)),
     }
 }
+/// Get the source file that created the asset
+/// # Required Json Asset fields
+/// * `name` : the name of the asset
+/// * `location` : asset location, typically: show/seq/shot
+/// * `id` : DB id can be used instead of name+location
 pub async fn source(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
     //
     let mut filter: bson::Document = doc! { "name": &json.name , "location": &json.location};
@@ -119,6 +124,12 @@ pub async fn source(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
     }
 }
 
+/// Marks an asset version as "Purge"
+/// # Required Json Asset fields
+/// * `name` : the name of the asset
+/// * `location` : asset location, typically: show/seq/shot
+/// * `id` : DB id can be used instead of name+location
+/// * `version` : Asset version
 pub async fn delete(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
     //
     let mut filter: bson::Document =
@@ -148,6 +159,11 @@ pub async fn delete(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
     }
 }
 
+/// Gets the latest version of an asset
+/// # Required Json Asset fields
+/// * `name` : the name of the asset
+/// * `location` : asset location, typically: show/seq/shot
+/// * `id` : DB id can be used instead of name+location
 pub async fn latest(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
     //
     let mut filter: bson::Document = doc! { "name": &json.name , "location": &json.location};

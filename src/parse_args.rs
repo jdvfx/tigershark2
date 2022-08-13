@@ -19,7 +19,7 @@ pub struct Command {
     pub json: AssetJson,
 }
 
-/// CLI Asset tracker with MondoDB
+/// Parse Command and Asset(json) arguments
 #[derive(Parser, Debug)]
 #[clap(author="Julien D.", version, about, long_about = None)]
 struct Args {

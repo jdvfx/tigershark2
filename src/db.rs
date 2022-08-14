@@ -17,6 +17,6 @@ pub async fn connect_to_db(
             let collection: mongodb::Collection<Asset> = database.collection(coll_name);
             Some(collection)
         }
-        Err(_e) => None,
+        Err(..) => None,
     }
 }

@@ -26,19 +26,21 @@ async fn main() {
     let args = parse_args::get_args();
     match args {
         Ok(args) => {
-            // Connect to DB
-            let uri: &str =
-                &env::var("MONGODB_URI").expect("MONGODB_URI environment var not set!");
+            // Connect to DB, needs 3 env variables: MONGODB_URI, MONGODB_DB, MONGODB_COLL
+            let uri: &str = &env::var("MONGODB_URI").expect("MONGODB_URI environment var not set!");
             let db_name: &str =
                 &env::var("MONGODB_DB").expect("MONGODB_DB environment var not set!");
             let collection_name: &str =
                 &env::var("MONGODB_COLL").expect("MONGODB_COLL environment var not set!");
             //
             let collection = db::connect_to_db(uri, db_name, collection_name);
+            // connect to db, return a collection
             match collection.await {
                 Some(coll) => {
+                    // Get asset json (eg: -a '{"name":"box",...}')
                     let json = args.json;
-                    // Execute one of the CRUD commands
+                    // Get command (eg: -c create )
+                    // Execute one of the commands
                     cli_output = match args.command {
                         CommandType::Create => utils::create(coll, json).await,
                         CommandType::Update => utils::update(coll, json).await,

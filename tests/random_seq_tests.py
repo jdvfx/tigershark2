@@ -12,7 +12,7 @@ exe = "release"
 ts_exec+="/target/"+exe+"/tigershark2"
 command = ts_exec
 
-commands = ["create","latest","update","source"]
+commands = ["create","latest","update","source","approve"]
 
 # return tuple with (ErrorCode,output)
 def db_insert(mycommand,myjson):

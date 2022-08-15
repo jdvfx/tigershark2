@@ -32,7 +32,7 @@ pub async fn create(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
 
     match cursor {
         Ok(c) => match &c {
-            Some(..) => CliOutput::new("ok", "Asset already exists"),
+            Some(..) => CliOutput::new("err", "Asset already exists"),
             None => {
                 // asset not found, then insert it
                 let insert_result = collection.insert_one(&asset, None).await;
@@ -116,9 +116,9 @@ pub async fn source(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
                         return CliOutput::new("ok", &source.to_owned());
                     }
                 }
-                CliOutput::new("ok", "Asset version not found")
+                CliOutput::new("err", "Asset version not found")
             }
-            None => CliOutput::new("ok", "Asset not found in DB"),
+            None => CliOutput::new("err", "Asset not found in DB"),
         },
         Err(c) => CliOutput::new("err", &format!("DB Quiery Error: {}", c)),
     }

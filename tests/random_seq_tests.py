@@ -8,26 +8,11 @@ ts_exec = os.getcwd()
 if ts_exec.endswith("/tests"):
     ts_exec = re.sub("/tests","",ts_exec)
 
-
 exe = "release"
-
 ts_exec+="/target/"+exe+"/tigershark2"
-
-
-
-
 command = ts_exec
 
-print(">> ", command)
-
 commands = ["create","latest","update","source"]
-
-myjson ={\
-"name":"Pink",\
-"location":"my pink location",\
-"source":"source_that_created PINK",\
-"datapath":"/my/data/path/pink"}
-
 
 # return tuple with (ErrorCode,output)
 def db_insert(mycommand,myjson):
@@ -38,9 +23,9 @@ def db_insert(mycommand,myjson):
         exit_code = process.wait()
         output = output.decode('utf-8')
         if exit_code == 0:
-            return (0,output)
+            return (0,output,err)
         else:
-            return (1,output)
+            return (1,output,err)
 
     except:
         return (1,"Python Popen failed")
@@ -52,22 +37,35 @@ letters = "abcdefgh"
 
 for i in range(100):
 
+    mycommand = random.choice(commands)
+
     randomchar = random.choice(letters)
     a=  random.choice(asset_names) + "_" + randomchar
     l = "/location/"+a
     s = "/source/"+a
     d = "/data/path/"+a
-    myjson = {"name":a, "location":l,"source":s,"datapath":d}
-    mycommand=  random.choice(commands)
+    v = random.randint(0,10)
+
+    # match mycommand:
+    #     case "create":
+    #         print(mycommand, "Create")
+    #     case "latest":
+    #         print(mycommand, "latest")
+    #     case "update":
+    #         print(mycommand, "update")
+    #     case "delete":
+    #         print(mycommand, "delete")
+    #     case "source":
+    #         print(mycommand, "source")
+
+
+
+    myjson = {"name":a, "location":l,"source":s,"datapath":d, "version":v}
 
     out = db_insert(mycommand,myjson)
-    print(">--- ",mycommand,myjson)
-    print(out)
-    print("!---")
+    if out[0]!=0:
+        print()
+        print(">--- ",mycommand,myjson)
+        print(out)
+        print("!---")
 
-"""
-
-
-out = db_insert(myjson)
-print(out)
-"""

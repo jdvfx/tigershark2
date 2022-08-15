@@ -2,10 +2,11 @@
 is a CLI based 3D asset version tracking tool with simple CRUD functions using MongoDB
 
 - create
-- update
+- update (up version)
 - get_latest (latest version)
 - get_source (path of file that created the asset)
 - delete (tag for deletion, a separate tool does the actual deletion)
+- approve (approve asset version)
 
 syntax:<br>
 

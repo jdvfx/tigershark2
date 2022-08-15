@@ -30,9 +30,9 @@ def db_insert(mycommand,myjson):
     except:
         return (1,"Python Popen failed")
 
-asset_names = ["sphere","cube","cone","volume","point","torus","plane","grid","teapot","ball"]
+asset_names = ["sphere","cube","cone","volume","point","torus","plane","grid","teapot","ball","ground","particle","mouse","bird","cat","dog","car"]
 
-letters = "abcdefgh"
+letters = "abcdefghijklmnopqrs"
 
 
 for i in range(100):
@@ -63,9 +63,9 @@ for i in range(100):
     myjson = {"name":a, "location":l,"source":s,"datapath":d, "version":v}
 
     out = db_insert(mycommand,myjson)
-    if out[0]!=0:
-        print()
-        print(">--- ",mycommand,myjson)
-        print(out)
-        print("!---")
+    # if out[0]!=0:
+    print()
+    print(">--- ",mycommand,myjson)
+    print(out)
+    print("!---")
 

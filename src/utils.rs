@@ -185,3 +185,37 @@ pub async fn latest(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
         Err(c) => CliOutput::new("err", &format!("DB Quiery Error {}", c)),
     }
 }
+/// Marks an asset version as "Approved"
+/// # Required Json Asset fields
+/// * `name` : the name of the asset
+/// * `location` : asset location, typically: show/seq/shot
+/// * `id` : DB id can be used instead of name+location
+/// * `version` : Asset version
+pub async fn approve(collection: mongodb::Collection<Asset>, json: AssetJson) -> CliOutput {
+    //
+    let mut filter: bson::Document =
+        doc! { "name": &json.name, "location": &json.location, "versions.version":&json.version};
+    filter_by_id(&json, &mut filter);
+
+    let db_approve_result = collection
+        .update_one(
+            filter,
+            doc! { "$set": { "versions.$.approved": true } },
+            None,
+        )
+        .await;
+
+    match db_approve_result {
+        Ok(o) => {
+            if o.matched_count == 0 {
+                return CliOutput::new("err", "Approval failed: asset version not found");
+            }
+
+            match o.modified_count {
+                0 => CliOutput::new("ok", "Already approved"),
+                _ => CliOutput::new("ok", "Version approved"),
+            }
+        }
+        Err(e) => CliOutput::new("err", &format!("Approval failed:{:?}", e)),
+    }
+}

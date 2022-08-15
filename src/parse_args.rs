@@ -11,6 +11,7 @@ pub enum CommandType {
     Source,
     Delete,
     Latest,
+    Approve,
 }
 
 #[derive(Debug)]
@@ -130,6 +131,13 @@ pub fn get_args() -> Result<Command, CliOutput> {
         "latest" => match a_name && a_location || a_id {
             true => Ok(Command {
                 command: CommandType::Latest,
+                json: asset_unwrapped,
+            }),
+            _ => Err(CliOutput::new("err", "latest : Asset missing some Keys")),
+        },
+        "approve" => match (a_name && a_location || a_id) && a_version {
+            true => Ok(Command {
+                command: CommandType::Approve,
                 json: asset_unwrapped,
             }),
             _ => Err(CliOutput::new("err", "latest : Asset missing some Keys")),

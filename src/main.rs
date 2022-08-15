@@ -47,6 +47,7 @@ async fn main() {
                         CommandType::Source => utils::source(coll, json).await,
                         CommandType::Delete => utils::delete(coll, json).await,
                         CommandType::Latest => utils::latest(coll, json).await,
+                        CommandType::Approve => utils::approve(coll, json).await,
                     };
                 }
                 None => {

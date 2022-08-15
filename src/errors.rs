@@ -26,18 +26,16 @@ impl CliOutput {
 
 // exit the program with:
 // - a message
-// - an exitcode (101:panic, 0:normal exit)
+// - an exitcode (101:error, 0:ok)
 pub fn exit_or_panic(cli_output: CliOutput) {
     match cli_output.status {
         Status::Ok => {
             print!("{}", cli_output.output);
             process::exit(0);
-            // exitcode=0
         }
         Status::Err => {
             print!("{}", cli_output.output);
-            panic!(">>panic<<");
-            // exitcode=101
+            process::exit(101);
         }
     }
 }

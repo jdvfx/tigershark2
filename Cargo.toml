@@ -5,6 +5,7 @@ authors = ["Julien D. <ju.dep@zoho.com>"]
 licence = "GNU GPLv3"
 repository = "https://github.com/jdvfx/tigershark2"
 edition = "2021"
+default-run = "tigershark2"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -20,3 +21,7 @@ tokio = { version = "1.20.1", features = ["full"]}
 [[bin]]
 path = "src/main.rs"
 name = "tigershark2"
+
+[[bin]]
+path = "src/purge.rs"
+name = "purge"

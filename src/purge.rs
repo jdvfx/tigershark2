@@ -1,5 +1,8 @@
 #![allow(dead_code, unused_variables, unused_assignments, unused_imports)]
 
+use std::fs::File;
+use std::io::prelude::*;
+
 use bson::{de::Error, raw::ErrorKind};
 use mongodb::bson::doc;
 pub mod parse_args;
@@ -15,6 +18,8 @@ use std::env;
 
 #[tokio::main]
 async fn main() {
+    let output_file = "files_to_purge";
+
     let cli_output: CliOutput;
     let uri = "mongodb://localhost:27017";
     let db_name = "sharks";
@@ -25,14 +30,16 @@ async fn main() {
         Some(coll) => {
             let filter: bson::Document = doc! { "versions": {"$elemMatch": { "status": "Purge"}}};
             let mut cursor = coll.find(filter.clone(), None).await.unwrap();
+            let mut output = File::create(&output_file).unwrap();
             while cursor.advance().await.unwrap() {
                 let c = cursor.deserialize_current();
                 let name = &c.as_ref().unwrap().name;
                 for version in c.as_ref().unwrap().versions.iter() {
                     match &version.status {
                         AssetStatus::Purge => {
-                            // println!("{:?} {:?}", name, version);
-                            println!("{:?}", version.datapath);
+                            let datapath = &version.datapath;
+                            println!("{:?}", &datapath);
+                            writeln!(output, "{}", &datapath).ok();
                         }
                         _ => (),
                     }

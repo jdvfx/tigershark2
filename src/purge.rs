@@ -10,7 +10,7 @@ mod assetdef;
 pub mod db;
 pub mod errors;
 pub mod utils;
-use assetdef::Asset;
+use assetdef::{Asset, AssetStatus};
 use std::env;
 
 #[tokio::main]
@@ -23,18 +23,20 @@ async fn main() {
     let collection = db::connect_to_db(uri, db_name, collection_name);
     match collection.await {
         Some(coll) => {
-            // let s = purge(coll);
-
             let filter: bson::Document = doc! { "versions": {"$elemMatch": { "status": "Purge"}}};
             let mut cursor = coll.find(filter.clone(), None).await.unwrap();
             while cursor.advance().await.unwrap() {
                 let c = cursor.deserialize_current();
                 let name = &c.as_ref().unwrap().name;
                 for version in c.as_ref().unwrap().versions.iter() {
-                    let status = &version.status;
-                    println!("{:?} {:?} {:?}", name, version, status);
+                    match &version.status {
+                        AssetStatus::Purge => {
+                            // println!("{:?} {:?}", name, version);
+                            println!("{:?}", version.datapath);
+                        }
+                        _ => (),
+                    }
                 }
-                // println!("\n{:?}", c);
             }
         }
         None => println!("no collections"),

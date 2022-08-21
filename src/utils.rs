@@ -1,3 +1,5 @@
+#![allow(dead_code, unused_variables, unused_assignments, unused_imports)]
+
 use crate::assetdef::{AssetStatus, AssetVersion};
 use crate::errors::CliOutput;
 use crate::parse_args::{Asset, AssetJson};
@@ -93,7 +95,7 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
             }
             None => CliOutput::new("err", "Asset not found in DB"),
         },
-        Err(c) => CliOutput::new("err", &format!("DB Quiery Error {}", c)),
+        Err(e) => CliOutput::new("err", &format!("DB Quiery Error {}", e)),
     }
 }
 /// Get the source file that created the asset
@@ -121,7 +123,7 @@ pub async fn source(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
             }
             None => CliOutput::new("err", "Asset not found in DB"),
         },
-        Err(c) => CliOutput::new("err", &format!("DB Quiery Error: {}", c)),
+        Err(e) => CliOutput::new("err", &format!("DB Quiery Error: {}", e)),
     }
 }
 
@@ -183,7 +185,7 @@ pub async fn latest(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
             }
             None => CliOutput::new("err", "Asset not found in DB"),
         },
-        Err(c) => CliOutput::new("err", &format!("DB Quiery Error {}", c)),
+        Err(e) => CliOutput::new("err", &format!("DB Quiery Error {}", e)),
     }
 }
 /// Marks an asset version as "Approved"
@@ -198,32 +200,63 @@ pub async fn approve(collection: mongodb::Collection<Asset>, json: AssetJson) ->
         doc! { "name": &json.name, "location": &json.location, "versions.version":&json.version};
     filter_by_id(&json, &mut filter);
 
+    let cursor = collection.find_one(filter.clone(), None).await;
 
+    let x = &json.version.clone();
+
+    match cursor {
+        Ok(c) => match &c {
+            Some(c) => {
+
+                // I "should be able" to use get() directly but that doesn't work
+                for i in &c.versions {
+                    if &i.version == &json.version {
+                        println!(">>>> {:?}, {:?}", &i.version, &i.depend);
+                    }
+                }
+
+                // let aa = c.versions.get(v).unwrap();
+
+                // let last_version: u32 = match c.versions.last() {
+                //     Some(v) => v.version,
+                //
+                // let version = &json.version - 1;
+                // let v = version.clone() as i32;
+
+                // let vv = *x as u32;
+                // TODO : replace the 0 with the current asset version passed in the JSON
+                // let depend = &c.versions.get(vv).unwrap();
+                let depend = 0;
+                CliOutput::new("ok", &format!(">depend:{:?}", depend))
+            }
+            None => CliOutput::new("err", "Asset not found in DB"),
+        },
+        Err(e) => CliOutput::new("err", &format!("DB Quiery Error {}", e)),
+    }
 
     // ---------------------------
     // TODO: find all the dependencies and approve them all
     // ---------------------------
 
+    // let db_approve_result = collection
+    //     .update_one(
+    //         filter,
+    //         doc! { "$set": { "versions.$.approved": true } },
+    //         None,
+    //     )
+    //     .await;
 
-    let db_approve_result = collection
-        .update_one(
-            filter,
-            doc! { "$set": { "versions.$.approved": true } },
-            None,
-        )
-        .await;
+    // match db_approve_result {
+    //     Ok(o) => {
+    //         if o.matched_count == 0 {
+    //             return CliOutput::new("err", "Approval failed: asset version not found");
+    //         }
 
-    match db_approve_result {
-        Ok(o) => {
-            if o.matched_count == 0 {
-                return CliOutput::new("err", "Approval failed: asset version not found");
-            }
-
-            match o.modified_count {
-                0 => CliOutput::new("ok", "Already approved"),
-                _ => CliOutput::new("ok", "Version approved"),
-            }
-        }
-        Err(e) => CliOutput::new("err", &format!("Approval failed:{:?}", e)),
-    }
+    //         match o.modified_count {
+    //             0 => CliOutput::new("ok", "Already approved"),
+    //             _ => CliOutput::new("ok", "Version approved"),
+    //         }
+    //     }
+    //     Err(e) => CliOutput::new("err", &format!("Approval failed:{:?}", e)),
+    // }
 }

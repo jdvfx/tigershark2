@@ -75,6 +75,7 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
                     source: json.source,
                     approved: false,
                     status: AssetStatus::Online,
+                    depend: Vec::new(),
                 };
 
                 // push a new AssetVersion into versions vector
@@ -196,6 +197,13 @@ pub async fn approve(collection: mongodb::Collection<Asset>, json: AssetJson) ->
     let mut filter: bson::Document =
         doc! { "name": &json.name, "location": &json.location, "versions.version":&json.version};
     filter_by_id(&json, &mut filter);
+
+
+
+    // ---------------------------
+    // TODO: find all the dependencies and approve them all
+    // ---------------------------
+
 
     let db_approve_result = collection
         .update_one(

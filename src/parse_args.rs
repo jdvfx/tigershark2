@@ -41,6 +41,7 @@ struct JsonOption {
     pub source: Option<String>,
     pub datapath: Option<String>,
     pub version: Option<u32>,
+    pub depend: Option<Vec<String>>,
     pub id: Option<String>,
 }
 // the asset json that gets passed to the CRUD function
@@ -51,6 +52,7 @@ pub struct AssetJson {
     pub source: String,
     pub datapath: String,
     pub version: u32,
+    pub depend: Vec<String>,
     pub id: String,
 }
 // create default empty values if missing
@@ -62,6 +64,7 @@ fn json_unwrap_or(json_o: JsonOption) -> AssetJson {
         source: json_o.source.unwrap_or_else(|| "".to_owned()),
         datapath: json_o.datapath.unwrap_or_else(|| "".to_owned()),
         version: json_o.version.unwrap_or(0),
+        depend: json_o.depend.unwrap_or_else(|| Vec::<String>::new()),
         id: json_o.id.unwrap_or_else(|| "".to_owned()),
     }
 }
@@ -90,6 +93,7 @@ pub fn get_args() -> Result<Command, CliOutput> {
     let a_source = asset.source.is_some();
     let a_datapath = asset.datapath.is_some();
     let a_version = asset.version.is_some();
+    // let a_depend = asset.depend.is_some();
     let a_id = asset.id.is_some();
 
     // unpack JsonOption into JsonString

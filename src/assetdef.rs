@@ -18,7 +18,7 @@ pub struct AssetVersion {
     pub source: String,
     pub approved: bool,
     pub status: AssetStatus,
-    pub depend: Vec<String>,
+    // pub depend: Vec<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -37,7 +37,7 @@ impl Asset {
             source: json.source,
             approved: false,
             status: AssetStatus::Online,
-            depend: json.depend,
+            // depend: json.depend,
         };
 
         let versions: Vec<AssetVersion> = vec![first_version];
@@ -73,7 +73,7 @@ impl From<AssetVersion> for Bson {
             "source":a.source,
             "approved":a.approved,
             "status":a.status,
-            "depend":a.depend,
+            // "depend":a.depend,
         };
         Bson::Document(d)
     }

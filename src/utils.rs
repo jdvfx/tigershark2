@@ -77,7 +77,7 @@ pub async fn update(collection: mongodb::Collection<Asset>, json: AssetJson) -> 
                     source: json.source,
                     approved: false,
                     status: AssetStatus::Online,
-                    depend: Vec::new(),
+                    // depend: Vec::new(),
                 };
 
                 // push a new AssetVersion into versions vector
@@ -207,11 +207,11 @@ pub async fn approve(collection: mongodb::Collection<Asset>, json: AssetJson) ->
     match cursor {
         Ok(c) => match &c {
             Some(c) => {
-
                 // I "should be able" to use get() directly but that doesn't work
                 for i in &c.versions {
                     if &i.version == &json.version {
-                        println!(">>>> {:?}, {:?}", &i.version, &i.depend);
+                        // println!(">>>> {:?}, {:?}", &i.version, &i.depend);
+                        println!(">>>> {:?}", &i.version)
                     }
                 }
 
@@ -226,9 +226,9 @@ pub async fn approve(collection: mongodb::Collection<Asset>, json: AssetJson) ->
                 // let vv = *x as u32;
                 // TODO : replace the 0 with the current asset version passed in the JSON
                 // let depend = &c.versions.get(vv).unwrap();
-                let depend = 0;
-                CliOutput::new("ok", &format!(">depend:{:?}", depend))
-            }
+                // let depend = 0;
+                CliOutput::new("ok", ">depend: NOTHING")
+            },
             None => CliOutput::new("err", "Asset not found in DB"),
         },
         Err(e) => CliOutput::new("err", &format!("DB Quiery Error {}", e)),

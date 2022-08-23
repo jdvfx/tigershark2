@@ -19,12 +19,14 @@ use std::env;
 #[tokio::main]
 async fn main() {
     let output_file = "files_to_purge";
-
     let cli_output: CliOutput;
-    let uri = "mongodb://localhost:27017";
-    let db_name = "sharks";
-    let collection_name = "tiger";
 
+    // Connect to DB, needs 3 env variables: MONGODB_URI, MONGODB_DB, MONGODB_COLL
+    let uri: &str = &env::var("MONGODB_URI").expect("MONGODB_URI environment var not set!");
+    let db_name: &str = &env::var("MONGODB_DB").expect("MONGODB_DB environment var not set!");
+    let collection_name: &str =
+        &env::var("MONGODB_COLL").expect("MONGODB_COLL environment var not set!");
+    //
     let collection = db::connect_to_db(uri, db_name, collection_name);
     match collection.await {
         Some(coll) => {
@@ -33,7 +35,7 @@ async fn main() {
             let mut output = File::create(&output_file).unwrap();
             while cursor.advance().await.unwrap() {
                 let c = cursor.deserialize_current();
-                let name = &c.as_ref().unwrap().name;
+                // let name = &c.as_ref().unwrap().name;
                 for version in c.as_ref().unwrap().versions.iter() {
                     match &version.status {
                         AssetStatus::Purge => {

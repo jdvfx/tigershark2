@@ -101,9 +101,7 @@ pub fn get_args() -> Result<Command, CliOutput> {
 
     // >>> COMMAND <<<
     // for each command, checks that the correct json values are present
-    let arg_command: &str = &args.command;
-
-    match arg_command {
+    match args.command.as_str() {
         "create" => match a_name && a_location && a_source && a_datapath {
             true => Ok(Command {
                 command: CommandType::Create,
